@@ -1,2 +1,19 @@
 syntax: glob
 *~
+*.dvi
+*.log
+*.aux
+*.toc
+*.out
+*.nav
+*.snm
+*.bbl
+*.blg
+*.vrb
+tmp/*.*
+.project
+.texlipse
+auto
+
+syntax: regexp
+^[^/]*\.pdf$
