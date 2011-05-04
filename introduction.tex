@@ -2,3 +2,46 @@
 
 \chapter*{Введение}\label{chap:introduction}
 \addcontentsline{toc}{chapter}{Введение}
+
+HiveMind is a cross-platform mind map editor. Its most important feature is
+collaborative mind mapping, allowing different people to edit mind maps
+together regardless of their location.
+
+In this paper we discuss the architecture of HiveMind network subsystem and
+implementation of collaborative mind map editing based on the XMPP pubsub
+extension protocol. Our approach operates in terms of abstract commands, which
+makes it loosely coupled from the application domain. It also makes possible
+to spread our teamwork architecture to a broader class of applications, which
+could benefit from collaborative document editing.
+
+Mind map is a diagram used to represent words, tasks, ideas, or other items
+linked to and arranged around a central key word or idea. There is no predefined
+algorithm on how to add and structure these data, which makes mind maps suitable
+for such activities as study, project management, problem solving, brainstorming.
+
+These kinds of work often involve many people. It reveals several
+issues. Firstly, all these people should be gathered in one place to begin
+collaboration. Secondly, it is hard to provide equal access to all participants,
+because only one person at the time can make changes to the mind map being
+constructed, for instance, on a whiteboard.
+
+HiveMind is a cross-platform collaborative mind map editor, which main idea is
+to give everyone an equal opportunity to contribute to the shared mind map
+regardless of their location either by using a mobile device or a personal
+computer.
+
+In general, the collaboration process can be described in the following way. One
+of participants publishes his/her mind map as a network service and goes on
+editing it. Another user connects to the service and retrieves the latest copy
+of the published mind map. After that, both users edit the map together. By
+changing a policy on the server side, it is possible to support for various
+teamwork scenarios.
+
+To allow starting teamwork at any moment we needed to choose a message exchange
+system. We selected Extensible Messaging and Presence Protocol (XMPP), because
+it helped us to manage with several network-related issues
+\cite{hivemind-8th-fruct}.
+
+In this paper we discuss the architecture of HiveMind network subsystem and
+implementation of collaborative mind map editing based on the XMPP pubsub
+extension protocol.
