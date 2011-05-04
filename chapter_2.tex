@@ -1,238 +1,190 @@
 \newpage
 \chapter{Реализация}\label{ch:chapter_2}
 
-\section{Установка инструментария}
+\section{Middleware For Collaboration Implementation}
 
-На текущей стадии разработки приложения отладка происходит в специальной среде
-Scratchbox.
+There is a lot of ways to achieve network communication between applications
+starting from assembling raw TCP/IP datagrams up to using object-oriented
+libraries for specific application-level protocols. We stated a list of
+requirements to choose an appropriate middleware technology. These requirements
+were collected from the three sources: our view of collaboration, restrictions
+imposed by the target platforms and a preliminary architecture of the
+application.
 
-Scratchbox "--- набор инструментов для кросс-компиляции, предназначенный для
-разработки приложений для встраиваемых Linux-систем. Scratchbox представляет
-собой <<песочницу>>, в которой все действия разработчика изолированы от реальной
-Linux-системы, на которой она запущена.
+According to our view of collaboration (see section \ref{})
+we have a server and several clients. For the sake of simplicity we assume that a server is allowed to be created anytime. Clients connect to server and modify
+the shared mind map. Every change of the map is propagated via the server, which
+notifies all the clients about it. For robust communicating all the participants
+must always have the exact copy of the mind map.
 
-Внутри <<песочницы>> своя файловая система со своим домашним каталогом и другими
-системными каталогами. Домашний каталог терминального сервера доступен из
-Scratchbox по пути /host\_home/имя\_пользователя/. Таким образом, все примеры,
-задания и прочие необходимые файлы могут размещаться и редактироваться в
-домашнем каталоге терминального сервера, а сборка и запуск приложения могут
-осуществляться в <<песочнице>> без перемещения файлов.
+HiveMind is now targeted at both mobile devices and PCs. Each platform gives us
+unique advantages. PC users usually have wide broadband Internet
+connection. Mobile devices can gain Internet access almost anytime and
+anywhere. Due to the lack of IPv4 addresses mobile operators often assign
+private IP addresses to mobile devices that makes them unreachable from the
+Internet. Data transmission via wireless media sometimes causes unreasonable
+delays for several seconds or more. PC users can use NAT or complex firewall
+software that blocks incoming connections. It may be even worse: in corporate
+environments users are often limited to HTTP proxy as the only source of the
+Internet connection.
 
-Установка гостевой ОС:
-\begin{enumerate}
-\item
-Установка Scratchbox
-\item
-Устанавка Xephyr X11 - программное обеспечение, необходимое для запуска Maemo SDK. Оно обеспечивает экран устройства для разработчика. Имея права суперпользователя (root), выполняем команду \textbf{sudo apt-get install xserver-xephyr}.
-\item
-Установка Maemo SDK.\\
-Для продолжения установки необходимо добавить текущего пользователя в группу sbox:\\
-\textbf{newgrp sbox}\\
-Далее нужно загрузить скрипт:\\
-\textbf{
-wget http://repository.maemo.org/stable/5.0/maemo-sdk-\textbackslash\\ install\_5.0.sh\\
-chmod a+x ./maemo-sdk-install\_5.0.sh\\
-./maemo-sdk-install\_5.0.sh}\\
-Заходим в Scratchbox и выполняем все действия в нем:\\
-\textbf{/scratchbox/login}\\
-Если получено сообщение об отсутствии прав, нужно добавить пользователя следующей командой:\\
-\textbf{sudo /scratchbox/sbin/sbox\_adduser USERNAME yes}
-\item
-Установка приложений Nokia\\
-\textbf{sb-conf select FREMANTLE\_X86}
-Для начала необходимо получить адрес источника обновлений и добавить их в список источников. Адрес можно узнать, перейдя по ссылке: \textit{http://tablets-dev.nokia.com/eula/index.php}\\
-\textbf{echo "deb http://repository.maemo.org/ fremantle/<md5 хеш>\textbackslash\\
-nokia-binaries" \textgreater\textgreater /etc/apt/sources.list}\\
-Затем нужно обновить и установить следующие пакеты:\\
-\textbf{apt-get update
-fakeroot apt-get install nokia-binaries}\\
-При возникновении проблем на этом этапе, рекомендуется повторить команду с параметром *--fix-missing*:
-\textbf{fakeroot apt-get install nokia-binaries --fix-missing}
-\item
-Установка библиотеки Qt.\\
-Для возможности сборки проектов с использованием библиотеки Qt, необходимо установить дополнительные пакеты, зайдя предварительно в оболочку:\\
-\textbf{/scratchbox/login\\
-fakeroot apt-get install libqt4-gui libqt4-dev}
-\item
-Сборка и запуск Qt-приложений
-Предварительно нужно запустить эмулятор устройства, на котором будет выполняться приложение.
-Выйдя из оболочки Scratchbox, нужно запустить Xephyr в новом окне:\\
-\textbf{/scratchbox/logout\\
-Xephyr :2 -host-cursor -screen 800x480x16 -dpi 96 -ac -kb \&}\\
-В другом окне консоли заходим в Scratchbox, нужно указать окно для эмулятора и запустить его:\\
-\textbf{/scratchbox/login\\
-export DISPLAY=:2\\
-af-sb-init.sh start}\\
-Директория с файлами проекта должна быть доступна из окружения Scratchbox. Заходим в нее:\\
-\textbf{cd ~/myQTProjectDir}\\
-Создаем файл проекта, make-файлы и собираем проект:\\
-\textbf{qmake -project\\
-qmake\\
-make}\\
-Запуск приложения:\\
-\textbf{run-standalone.sh ./myQTApp}
-\end{enumerate}
+Summarizing all these challenges we get the following list of requirements for
+middleware technology.
+\begin{itemize}
+\item Communication is based on the client-server model.
+\item Server supports for subscription.
+\item Users may have a slow unreliable connection to the Internet through the
+  NAT gateway.
+\item There must be no additional effort to set up the server.
+\item Middleware must be supported by a Python library.
+\end{itemize}
 
-\section{Реализация графического отображения диаграммы}
+%This is not full list of requirements. It can be filled up with these
+%statements. They cover additional functionality.
+%\begin{itemize}
+%\item Technology should support transient or backup server to reinforce
+%communication between nodes.
+%\item Messages may be encrypted to ensure the privacy of shared map.
+%\item Technology should support instant messaging system.
+%\end{itemize}
 
-Первым этапом реализации задачи по отображению модели диаграммы является проектировании архитектуры взаимодействия классов модели и классов вида.
-При проектировании архитектуры были учтены такие факторы, как работа с очень большим количеством графических элементов "--- узлов диаграммы и поддержка прокрутки для больших диаграмм. Диаграмму с взаимодействием классов сцены и классов модели можно видеть в приложении~\ref{ap:uml_scene} на рис.~\ref{ris:uml_scene}
+We compared several alternative technologies and chose the XMPP protocol as it
+allows us to avoid almost all concerns about implementation of client-server
+communication.
 
-Классами для отображения диаграммы были выбраны QGraphicsItem и
-QGraphicsScene, т.к. они специально оптимизированы для отображения большого числа графических элементов. Классы NodeDelegate и MindMapDelegate являются посредниками между классами вида и классами модели: данные классы рассчитывают положение узлов на сцене.
+XMPP protocol can be considered at the several levels of abstraction. At the low
+level there is a XMPP client application that connects to the XMPP server and
+exchanges messages with it. Connection can be established in many ways, even on
+top of HTTP protocol. At the higher level of abstraction the client gains access
+to the whole network, where every node has unique identifier (JID) and no
+additional effort required to exchange information between them. The client
+creates a message addressed to another client and sends it to the server, which
+handles all the routine to deliver the message.
 
-Модель диаграммы связей не содержит информацию о расположении узлов в пространстве, поэтому необходима реализация алгоритма расчета координат каждого узла на сцене, на уровне классов посредников.
+Another great feature of XMPP is protocol extensions (XEP). 
+XMPP is an open protocol and anyone may create a custom high-level protocol on
+top of it. XMPP Standards Foundation manages the process of creation and
+maintenance of such protocols. There is XEP-0060 Publish-Subscribe extension
+\cite{xep-0060}. It defines how to implement publish/subscribe services on top
+of XMPP. Any member of the network can create pub/sub service. XMPP protocol
+with Publish-Subscribe extension fits the best into our requirements and that is
+why it is our choice for middleware technology.
 
-Основная идея алгоритма в том, чтобы уделить внимание только высоте элемента. Она должна быть достаточной, чтобы поместить текст и оформление узла.
+XMPP protocol is XML-based, and it may seem that using this protocol would
+require broadband Internet connection, but it is not so. Intercommunication
+between XMPP client and server may be compressed when XEP-0138 (Stream
+Compression extension) enabled.
 
-\subsection{Расчет высоты элемента}
+Nowadays a lot of public XMPP servers (e.g. jabber.ru) support for chatting. And
+it is well-known that participating in chats is successful even when using
+mobile phones without neccessity of broadband Internet connection. From the
+technical point of view collaborative mind mapping looks very similar to chat
+participation and expected traffic volume looks comparable. The only exception
+relates to the device being a server, which may require broader connection to
+communicate with lots of clients. This question will be addressed during the
+further development of the HiveMind network subsystem.
 
-Основная секция алгоритма "--- это расчет высоты узла. Высота узла должна быть равна высоте поддерева этого узла. Если узел не содержит потомков, то его высота состоит из высоты текста и высоты оформления узла. Рис.~\ref{ris:node_single} показывает расчет высоты отдельного узла.
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.5\linewidth]{node-single}
-\caption{Расчет высоты узла}
-\label{ris:node_single}
-\end{figure}
+The next task was to find a pure Python XMPP library that supports XEP-0060
+extension. There are eight Python libraries listed at the XMPP Foundation
+Website \cite{xmpp}. Some of them are discontinued (jabber.py), some are
+targeted at newer (2.6, 3.x) Python releases which are unavailable on Maemo
+platform (pyxmpp), the others represent research projects and are not suitable
+for production environment (SleekXMPP). Twisted is the only XMPP library
+available in Maemo repository.
 
-Рис.~\ref{ris:node_complex}  описывает расчет высоты узла, если он имеет дочерние узлы. Если сумма высот дочерних узлов больше чем высота родительского узла, то данная сумма должна быть объявлена как высота данного узла. В противном случает должна использоваться высота данного узла.
+Twisted framework does not include support for Publish-Subscribe extension but
+there is an external full-featured implementation named wokkel.
+It is not present in maemo repository. To base our application on top of that 
+library, we need to create and maintain package for maemo platform. This is
+additional effort we need to make to enable support for mobile devices.
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{node-complex}
-\caption{Расчет высоты узла с учетом высоты поддерева}
-\label{ris:node_complex}
-\end{figure}
+XMPP protocol was created as an instant messaging protocol. It is convenient to
+exchange human-readable messages in human-readable format. For the sake of 
+interoperability it uses XML-based structures for message formatting. 
 
-Алгоритм расчета высоты узла:
-\begin{lstlisting}
-class MindMapDelegate{
-	...
-	def nodeHeight(self):
-		...
-	def height(self):
-		sum = 0
-		for childNode in self.__childs:
-			sum += childNode.nodeHeight()
-		if nodeHeight() < sum:
-			return sum
-		return nodeHeight()
-	...
-}
-\end{lstlisting}
+\section{Protocol For Collaboration}
 
-В примере метод nodeHeight() рассчитывает высоту самого узла. А метод height() рассчитывает высоту узла с учетом высоты дочерних узлов.
+% really awful beginning
+ The development of any complex protocol and it implementation is a
+ labour-consuming process. Our development team had no previous experience in
+ such field and thus we decided to use iterative approach. At the first iteration
+ protocol for the team work should be as simple as possible. Thereby allow us to
+ develop network architecture and to test selected libraries.
 
-\subsection{Расчет положения узлов}
+ % data structure
+ Publish-Subscribe extension requires to share information in the form of nodes
+ and items. Node-item system can be compared with file system, where nodes
+ represent directories and items represent files. Each item may have unique
+ identifier. Subscriber can retrieve items from service either by name or get a
+ number of last published items. Items should contain a valid XML data.
 
-Для позиционирования узлов на сцене, необходимо определить базовую точку. Базовую точку можно видеть на рис.~\ref{ris:node_calculation}. Мы принимаем в расчет что узел может корректно отрисовать себя относительно базовой точки.
+ HiveMind has undo/redo capabilities as any good document editor does. Now they
+ are implemented on top of QUndoStack. When user makes a change to the mind map
+ QUndoCommand is created and pushed into the stack. This allows the user to
+ travel through the history of modifications. We decided to use undo/redo stack
+ to model data structures of the protocol. All mind map data can be placed
+ inside a single node. First item must contain XML-serialized mind map. All other
+ items hold small changesets, witch users make to shared map. These modifications
+ are the XML-serialized versions of QUndoCommand.
 
-Позиция узла "--- это позиция в родительских координатах, то есть позиция базовой точки текущего узла идентируется из базовой точки родительского узла по осям $X$ и $Y$.
+ \begin{figure}[!h]
+ \centering
+ \includegraphics[width=\linewidth]{users_collaboration_example.pdf}
+ \caption{Propagation of mind map changeset}
+ \label{users_collaboration_example}
+ \end{figure} 
 
-Все вычисления выполняются с использованием нижних элементов.
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.8\linewidth]{node-calculation}
-\caption{Расчет координат узла}
-\label{ris:node_calculation}
-\end{figure}
+ % notification propagation
+ First item in the node is placed by the service in the moment of creation. Other
+ items are published by participants of collaboration. Every new modification
+ published in the node is retransmitted via update notifications to all
+ subscribers and the service holder (see fig. \ref{users_collaboration_example}). 
+ Service may reject the changeset if there are some defects (e.g. user wants to 
+ update mind map node when it was already deleted by another user) and send error
+ notification back to the subscriber.
 
-Горизонтальное смещение "--- это небольшой промежуток между всеми дочерними узлами и родительским узлом
-$X$ равен сумме ширины родительского узла и величины горизонтального промежутка между узлами $X = w + s$.
+ Protocol design proposes asynchronous propagation of modifications on the client
+ side of publish/subscribe interaction. User changes to the mind map in the form
+ of XML-serialized command are transmitted to the service and do not store in
+ the local undo stack. Only changesets that were received as update notifications
+ are added to the stack.
 
-Вертикальное смещение немного сложнее. Положим, что базовая точка узла "--- это половина высоты узла и родительский узел уже находится на середине высоты. Позиции дочерних узлов рассчитываются относительно базовой точки родительского, то есть относительно координаты $(0, 0)$.
+ Subscribers can retrieve all items stored in the node in any time. This
+ way clients may synchronize contents of their local copy of mind map if
+ transmitted changeset is rejected. Service does not need any additional effort
+ to have up-to-date map because all notifications are local and can not be lost
+ during transmission.
 
-Размещение узлов должно производиться относительно высоты родительского поддерева, а не относительно высоты родительского узла. Это учитывается потому что высота узла может превышать высоту поддерева.
+ To achieve this asynchronous process new element was added to the core of
+ HiveMind --- NetworkController. It manages pub/sub protocol handlers. All
+ QUndoCommands created as a result of mind map modifications are passed to the
+ controller. If there is no network collaboration at the moment command will be
+ sent back to MainWindowController and added to the local undo/redo stack.
+ Otherwise command will be serialized and send to the service. Update
+ notifications are deserialized into QUndoCommands and added to the undo/redo
+ stack.
 
-Шаги, необходимые для вычисления позиции дочерних узлов:
-\begin{enumerate}
-\item
-Рассчитать высоту родительского поддерева $(h = h1+h2+h3)$
-\item
-Найти верхнюю точку первого дочернего узла $(y=-h/2)$
-\item
-Рассчитать смещение по $y$ базовой точки узла $(y1=y+h1/2)$
-\item
-Установить позицию для дочернего узла $(x, y1)$
-\item
-Обновить верхнюю точку для следующего дочернего узла\\ $(y=y+h1)$
-\item
-Перейти на шаг 3, сдвинув соответственно значения\\ $(y1 \to y2, h1 \to h2)$
-\end{enumerate}
+ The drawbacks of current collaboration protocol design and implementation
+ include following statements. Client must wait for an update notification in
+ order to see changes that he or she made to the shared mind map. Participants
+ cannot use undo/redo commands.
 
-Так же на сцене располагаются кнопки для управления масшабом карты. Результат работы можно видеть в приложении~\ref{ap:screenshot} на рис.~\ref{ris:main_view}
+ not 4 current document, may be next one
+ There are brilliant examples on how to build iterative update shared space -
+ Version Control Systems. Their main aim is almost the same as editing shared
+ mind map: provide access to common space of source files. VCS can do all the 
+ work here, but they do not provide any notification to all people involved in
+ collaborative work. They use robust protocols, send only difference between
+ committed versions, and do it really slow. \ldots
 
 \section{Реализация контекстного меню узла}\label{sec:context_menu}
-
-Задача контекстного меню "--- вызов наиболее востребованных операций над выбранным узлом диаграммы: сворачивание/разворачивание узла, добавление новых дочерних узлов и удаление выбранного узла, редактирование текста и выбор пиктограмм для узла.
-
-Удобство работы с меню является одним из определяющих факторов простоты и скорости выполнения редактирования диаграммы.
-Библиотека Qt поддерживает стандартное контекстное меню в виде списка названий операций, но в нашем случае оно будет выглядеть очень громоздко, поэтому было решено сделать анимированное меню в виде круглых кнопок, располагающихся по дуге. Ввиду особенностей мобильного устройства были выбраны достаточно большие размеры кнопок, чтобы обеспечить удобное управление пальцами, не используя стилус.
-
-В качестве реализации анимации был взят Animation Framework библиотеки Qt. Он содержит все необходимые инструменты для реализации качественной анимации с минимальными затратами.
 
 \subsection*{Алгоритм анимации меню}
 
 \subsubsection*{Выбор радиусов эллипса}
 
-При расчете размеров эллипса нужно учитывать размер кнопок меню. В данном случае размер кнопок равен 64x64 пикселя, так как граница эллипса должна проходить через центр кнопок. Так же нужно учесть небольшой запас, чтобы кнопки не соприкасались друг с другом. В итоге получим следующий алгоритм:
-\begin{lstlisting}
-rect = self._getItemViewRect()
-self.__basePoint = rect.center()
-if rect.width() > 100:
-	self.__radiusOne = rect.width() / 2.0 + 32
-else:
-       self.__radiusOne = 82
-if rect.height() > 60:
-	self.__radiusTwo = rect.height() / 2.0 + 32
-else:
-	self.__radiusTwo = 62 
-\end{lstlisting}
-где rect "--- прямоугольник узла, \_\_basePoint "--- центр прямоугольника.
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.3\linewidth]{menu/ellipse}
-\end{figure}
-
 \subsubsection*{Вычисление координат кнопок}
-Для вычисления координат кнопок меню на границе эллипса нужно знать угол, относительно оси X. 
-Для расположения кнопок по эллипсу зададимся шагом угла и минимальным расстоянием между кнопками.
-Пусть начальные координаты первой кнопки меню задаются углов равным $1.2\pi$ радиана.
-Тогда следующие координаты будут вычисляться по следующему алгоритму:
-\begin{lstlisting}
-angle = startAngle
-angleStep = math.pi / 60
-for each button:
-	curPos = self._calculatePosition(angle)
-	button.setPos(curPos)
-	while True:
-		angle += angleStep
-		nextPos = self._calculatePosition(angle)
-		if distance(curPos, nextPos) >=MIN_DISTANCE:
-			if not self._isButtonInside(*nextPos):
-				return
-			break
-\end{lstlisting}
-
-Результат можно видеть в приложении~\ref{ap:screenshot} на рис.~\ref{ris:context_menu}.
 
 \section{Реализация редактора текста узла}\label{sec:node_text_editor}
 
-Библиотека Qt не имеет стандартного диалога для редактирования текста, поэтому возник вопрос о создании эргономичного редактора текста для приложения.
-При разработке редактора текста нужно учитывать малые размеры экрана, поэтому было решено оставить в главном окне редактора только основные кнопки форматирования текста.
-
-Большую часть экрана занимает поле для набора текста, оно может работать в нескольких режимах: редактирование простого текста и редактирование форматированного текста (в формате HTML).
-
-Выбор семейства и размер шрифта осуществляется в отдельном окне, так как это довольно редкая операция и ее можно ее можно убрать из основного окна редактора.
-
-Данный редактор работает в двух режимах: редактирование простого текста и редактирование HTML. В режиме HTML возможно редактирование как текста, так и исходного кода страницы. 
-
-Режимы работы редактора показаны на рис.~\ref{ris:text_editor} в приложении~\ref{ap:screenshot}.
-
 \section{Реализация поддержки пиктограмм в узлах}\label{sec:node_icons_support}
-
-Использование пиктограмм в узлах повышает информативность диаграммы. С их помощью можно информировать пользователя о приоритете той или иной подзадачи или текущем статусе.
-Для поддержки пиктограмм возникают такие задачи как загрузка пиктограмм в программу и диалог выбора некоторого списка пиктограмм из большой таблицы для конкретного узла.
-Пиктограммы хранятся в отдельной папке, программа загружает те из них, которые указаны в настройках. Это дает большую гибкость настройки для конечного пользователя "--- возможность использования пользовательских пиктограмм.
-Диалоговое окно для выбора пиктограмм разделено на две части: в верхней части находится таблица загруженных пиктограмм, а в нижней "--- список выбранных пиктограмм для узла. Выбор пиктограммы в таблице осуществляется простым кликом по ней, после чего она добавляется в конец списка.
-При клике на пиктограмму в списке, она удаляется. Так же пиктограммы можно перемещать по списку, для этого нужно выбрать пиктограмму и, не отпуская ее, переместить на нужное место. Окно выбора пиктограмм можно видеть на рис.~\ref{ris:icons_selector} в приложении~\ref{ap:screenshot}.
