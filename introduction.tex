@@ -3,45 +3,43 @@
 \chapter*{Введение}\label{chap:introduction}
 \addcontentsline{toc}{chapter}{Введение}
 
-HiveMind is a cross-platform mind map editor. Its most important feature is
-collaborative mind mapping, allowing different people to edit mind maps
-together regardless of their location.
+В настоящее почти каждый человек, живущий в развитой стране, использует
+мобильные устройства в своём быту. Существует множество классов данных
+устройств, таких как: мобильные телефоны, смартфоны, КПК, планшеты.
+Мобильные устройства прочно вошли в жизнь человека. С каждым годом наращивается
+функционал и производительность данных устройств. Многие люди
+находят в данных устройствах замену своему стационарному компьютеру. Мобильные устройства
+оснащаются средствами связи, такими как wi-fi, bluetooth, 3G, что позволяет
+обладателю данного устройства пользоваться интернетом.
 
-In this paper we discuss the architecture of HiveMind network subsystem and
-implementation of collaborative mind map editing based on the XMPP pubsub
-extension protocol. Our approach operates in terms of abstract commands, which
-makes it loosely coupled from the application domain. It also makes possible
-to spread our teamwork architecture to a broader class of applications, which
-could benefit from collaborative document editing.
+Диаграммы связей --- это графическое представление данных, имеющих
+иерархическую структуру. Они позволяют создавать, отображать и
+структурировать некоторую иноформацию. У диаграмм связи нет ограничений на
+структуру данных, за исключением иерархческого порядка, поэтому они могут
+использоваться для работы с различной инофрмацией. Они успешно
+применяются для генерации идей, конспектирования докладов, написания планов
+статей, составление презентаций и так далее.
 
-Mind map is a diagram used to represent words, tasks, ideas, or other items
-linked to and arranged around a central key word or idea. There is no predefined
-algorithm on how to add and structure these data, which makes mind maps suitable
-for such activities as study, project management, problem solving, brainstorming.
+Диаграммы связи используются во множестве различных ситуаций связанных с работой
+над данными. Зачастую работа над данными требует участия группы людей. В данной
+ситуации возникает несколько проблем. Во-первых, людям, участвующим в данном
+процессе необходимо собраться в одном месте, чтобы начать совместную работу.
+Во-вторых, сложно предоставить всем участникам процесса равноценный доступ к
+диаграмме связи, например только один человек может сидеть за компьютером, либо
+писать на доске.
 
-These kinds of work often involve many people. It reveals several
-issues. Firstly, all these people should be gathered in one place to begin
-collaboration. Secondly, it is hard to provide equal access to all participants,
-because only one person at the time can make changes to the mind map being
-constructed, for instance, on a whiteboard.
+Решение вышеназванных проблем заключается в том, чтобы использовать возможности
+мобильных устройств. Мобильные устройства портативны, что позволяет их с
+легкостью всегда держать при себе. Также они оснащены средствами доступа в
+интернет. Идея заключается в том, чтобы предоставить людям равные возможности по
+внесению своего вклада в создание диаграмм, в любое время, в любом месте,
+используя мобильное устройство или персональный компьютер.
 
-HiveMind is a cross-platform collaborative mind map editor, which main idea is
-to give everyone an equal opportunity to contribute to the shared mind map
-regardless of their location either by using a mobile device or a personal
-computer.
+В данной работе описывается реализация функции совместного редактирования в
+редакторе диаграмм связей под названием HiveMind. Данный проект разрабатывается
+с начала 2010 года группой студентов рамках программы FRUCT. HiveMind имеет
+множество функций для редактирования диаграмм связей и поддержку платформ
+windows, maemo, meego, linux. Проект направлен на достижение максимальной
+мобильности пользователей, повышение производительности труда и увеличение
+потенциальных решений в поставленных задачах.
 
-In general, the collaboration process can be described in the following way. One
-of participants publishes his/her mind map as a network service and goes on
-editing it. Another user connects to the service and retrieves the latest copy
-of the published mind map. After that, both users edit the map together. By
-changing a policy on the server side, it is possible to support for various
-teamwork scenarios.
-
-To allow starting teamwork at any moment we needed to choose a message exchange
-system. We selected Extensible Messaging and Presence Protocol (XMPP), because
-it helped us to manage with several network-related issues
-\cite{hivemind-8th-fruct}.
-
-In this paper we discuss the architecture of HiveMind network subsystem and
-implementation of collaborative mind map editing based on the XMPP pubsub
-extension protocol.
