@@ -1,6 +1,7 @@
 \newpage
 
-\chapter{Мотивация и постановка задачи}\label{ch:chapter_1}
+\chapter{Мотивация и постановка задачи}
+\label{ch:chapter_1}
 
 \section{Диаграммы связей}
 
@@ -16,66 +17,56 @@
 применения некоторых вышеописанных атрибутов узлов.
 
 
-\section{Use Cases For Collaborative Mind Mapping}
-\label{collaboration-consept}
+\section{Совместное редактирование диаграмм связи}
+\label{sec:collaborative_mindmapping}
 
-To allow starting teamwork at any moment we needed to choose a message exchange
-system. We selected Extensible Messaging and Presence Protocol (XMPP), because
-it helped us to manage with several network-related issues
-\cite{hivemind-8th-fruct}.
+В общем виде, процесс совместного редактирования диаграмм должен выглядеть
+следующим образом. Один пользователь с установленным приложением HiveMind в
+любой момент может открыть доступ к своей диаграмме связи. Другой пользователь
+подключается к диаграмме связи данного человека и автоматически получает её
+актуальную копию, после чего оба пользователя начинают совместное
+редактирование. Для того чтобы предоставить различные сценарии
+совместного взаимодействие, на сервере должна быть возможность изменять права
+участников и режимы доступа карте. Далее будут перечислены возможные сценарии
+совместного взаимодействия.
 
-In general, the collaboration process can be described in the following way. One
-of participants publishes his/her mind map as a network service and goes on
-editing it. Another user connects to the service and retrieves the latest copy
-of the published mind map. After that, both users edit the map together. By
-changing a policy on the server side, it is possible to support for various
-teamwork scenarios.
+Пользователь создаёт диаграмму связи и начинает её редактирование, используя
+мобильное устройство, ноутбук или персональный компьютер. В процессе
+редактирования пользователь решает показать свою работу другу (к примеру, для
+получения помощи). Для того чтобы сделать данное действие возможным, он
+открывает доступ к своей диаграмме. В данном случае ноутбук или мобильное
+устройство пользователя работает как сервис, доступный из локальной сети или
+интернет. Другой пользователь подключается к диаграмме связи и автоматически
+получает актуальную версию диаграммы. Далее оба пользователя начинают совместное
+редактирование диаграммы. Количество взаимодействующих участников неограниченно,
+поэтому другие пользователи также могут участвовать в совместной работе.
+Изменения, совершаемые каждым из участников, незамедлительно посылаются
+остальным участникам.
 
+Следующий сценарий использования совместного редактирования диаграмм связи может
+быть полезен при представлении докладов. К примеру, докладчик имеет
+дополнительные материалы, такие как: план презентации, краткий обзор речи
+выстпуление или ссылки на дополнительные ресурсы. Докладчик оформляет данные
+материалы в виде диаграммы связи и открывает к ней доступ. Используя HiveMind
+cлушатели подключаются к диаграмме связи, выложенной докладчиком, используя свои
+мобильные устройства или нетбуки. Таким образом слушатели получают материалы
+подготовленные докладчиком, а также все изменения, сделанные докладчиком в
+процессе выстпуления и позволяющие более ясно предоставить материал доклада.
 
-In this chapter we present our view of collaborative work involving mind
-mapping. There are some possible scenarios below.
+Диаграмма связи также может содержать материалы для дискуссии в реальном
+времени. В данном случае она может быть использована как лекционная доска с
+иерархической структурой, на которую каждый участник может заносить свои идеи,
+комментарии или мнения. Главное преимущество такого рода обсуждений с
+исполльзованием HiveMind то, что все данные имеют иерархическую структуру и
+доставляются всем участникам почти мгновенно.
 
-A user creates a mind map and starts editing it using his/her mobile device,
-laptop or personal computer. During mind mapping he/she decides to show his/her
-work to a friend (to get some help, for example).  To do this, he/she publishes
-the mind map as a network service and goes on editing. In this case the user's
-device or laptop works as a server available from a local network or Internet.
-
-Another user connects to the network service and retrieves the latest copy of
-the published mind map. After that both users can edit the map together. The
-number of possible participants is potentially unlimited, so other users can
-also join collaboration. All the changes are sent immediately to all
-participants of collaboration.
-
-To simplify discussion of the work for all participants, mind mapping
-application may provide a text messaging service. It allows users to exchange
-suggestions, questions and opinions without necessity of using additional
-applications.
-
-
-% XXX It is very important to prevent unsynchronized changes of mind map. This
-% task is solved automatically through a centralized processing of all changes.
-% Server receives and processes all users changes sequentially. This approach
-% excludes the following modifications before accepting of previous. Any
-% participants may be a server. To do this he must have a laptop, PC or mobile
-% devices having an installed application for mind mapping. There are no special
-% requirements to publish a map as service.
-
-Another use case of collaborative mind mapping relates to public speaking or
-brainstorming. For example, the speaker provides additional material to the
-participants, such as a plan of the presentation, detailed speech synopsis,
-links to the additional resources. The other participants can see these
-materials using their mobile devices/laptops. They also receive all the changes
-that the author makes during his/her speech, explaining details on-the-fly.
-
-The mind map may contain some materials for a live discussion. In this case it
-can be used as a shared flip chart with the hierarchical structure for gathering
-participants' ideas, comments and opinions. The advantage here is that the
-results become available immediately.
-
-At last, if the author would not like participants to edit the published
-materials, he or she can prevent any modifications by using read-only mode.
-Read-only mode can be also applied to a part of the mind map only.
+Пользователь может хранит на диаграмме связи свою личную информацию, поэтому,
+открывая доступ к диаграмме связи, он должен иметь возможность ограничить
+возможность присоединения к диаграмме только избранному кругу лиц. Также он
+должен иметь возможность контролировать права доступа участников на
+редактирование. К примеру, при выступлении двух докладчиков перед аудиторией,
+необходимо разрешить редактирование диаграммы только выстпуающим и
+запретить всем остальным.
 
 \section{Описание проекта}\label{sec:project_summary}
 
