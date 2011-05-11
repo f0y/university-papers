@@ -27,7 +27,7 @@ TCP/IP, заканчивая использованием высокоуровн
 главу \ref{sec:project_summary}), имеющие различный способ подключения к
 интернету. У каждого из этих способов есть свои преимущества и
 недостатки. Пользователи настольных компьютеров, как правило, имеют широкий
-канал интернет соединения, в отличие от пользователей мобильмобильных устройств.
+канал интернет соединения, в отличие от пользователей мобильных устройств.
 Мобильные устройства способны подключаться к интернету почти везде и в любое
 время. В связи с нехваткой IPv4 адресов, операторы мобильной связи назначают
 серые ip адреса мобильным устройствам, что делает данные устройства недоступными
@@ -131,13 +131,6 @@ interoperability it uses XML-based structures for message formatting.
  items hold small changesets, witch users make to shared map. These modifications
  are the XML-serialized versions of QUndoCommand.
 
- \begin{figure}[!h]
- \centering
- \includegraphics[width=\linewidth]{users_collaboration_example.pdf}
- \caption{Propagation of mind map changeset}
- \label{users_collaboration_example}
- \end{figure} 
-
  % notification propagation
  First item in the node is placed by the service in the moment of creation. Other
  items are published by participants of collaboration. Every new modification
@@ -224,13 +217,6 @@ receives all the data stored in the node.
 
 % notification propagation
 
-\begin{figure}
-\centering
-\includegraphics[width=0.8\linewidth]{changeset-propagation.pdf}
-\caption{Changeset propagation}
-\label{Changeset propagation}
-\end{figure}
-
 Each modification published in the node is recorded as a ``changeset''. The
 changeset holds information about type of change, time it was formed, and the
 author of the change (see fig.~\ref{Changeset propagation}). Service may reject
@@ -282,20 +268,6 @@ of Wokkel and provides implementations of many XEP-0060 features such as
 ``Subscribing'', ``Publishing'', ``Persistent items'', ``Node creation'' and
 etc.
 
-\begin{figure}
-\begin{minipage}[t]{0.65\linewidth}
-\center{\includegraphics[width=\linewidth]{idavoll-classes.pdf}}
-  \caption{Hierachy of network classes}
-  \label{Network classes}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.35\linewidth}
-\center{\includegraphics[scale=0.8]{ping-manager.pdf}}
-  \caption{PingManager interaction}
-  \label{Ping manager}
-\end{minipage}
-\end{figure}
-
 Idavoll has many classes needed to implement XEP-0060 specification (see
 fig.~\ref{Network classes}). Node class represents a XEP-0060 node. There are
 two node types: Leaf and Collection. A leaf node contains a published item,
@@ -323,12 +295,6 @@ PingClientProtocol (see fig.~\ref{Ping manager}).  It creates/deletes instances
 and starts/stops ping to the certain entity. PingClientProtocol class is
 responsible for notifying NetworkController about participant status, which is
 shown to the service owner (see fig.~\ref{Permissions dialog}).
-
-\begin{figure}[b] \centering
-\includegraphics[width=0.5\linewidth]{permissions_dialog.png}
-  \caption{Permissions dialog}
-  \label{Permissions dialog}
-\end{figure}
 
 \section{Access Control System}
 \label{Access control system}
