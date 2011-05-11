@@ -1,53 +1,56 @@
 \newpage
-\chapter{Реализация}\label{ch:chapter_2}
 
-\section{Middleware For Collaboration Implementation}
+\chapter{Реализация}
+\label{ch:chapter_2}
 
-There is a lot of ways to achieve network communication between applications
-starting from assembling raw TCP/IP datagrams up to using object-oriented
-libraries for specific application-level protocols. We stated a list of
-requirements to choose an appropriate middleware technology. These requirements
-were collected from the three sources: our view of collaboration, restrictions
-imposed by the target platforms and a preliminary architecture of the
-application.
+\section{Выбор технологий для реализации сетевой архитектуры}
 
-According to our view of collaboration (see section \ref{})
-we have a server and several clients. For the sake of simplicity we assume that a server is allowed to be created anytime. Clients connect to server and modify
-the shared mind map. Every change of the map is propagated via the server, which
-notifies all the clients about it. For robust communicating all the participants
-must always have the exact copy of the mind map.
+\subsection{Детальная проработка требований}
+Существует множество способов установить сетевое взаимодействие между
+приложениями, начиная от низкоуровневой обработки пакетов на уровне стека
+TCP/IP, заканчивая использованием высокоуровневых объектно-ориентированных
+библиотек для протоколов прикладного уровня. Был сформирован ряд ограничений
+(см. главу \ref{sec:problem_statement}), которых необходимо придерживаться при
+выборе технологии для построения сетевой архитектуры.
 
-HiveMind is now targeted at both mobile devices and PCs. Each platform gives us
-unique advantages. PC users usually have wide broadband Internet
-connection. Mobile devices can gain Internet access almost anytime and
-anywhere. Due to the lack of IPv4 addresses mobile operators often assign
-private IP addresses to mobile devices that makes them unreachable from the
-Internet. Data transmission via wireless media sometimes causes unreasonable
-delays for several seconds or more. PC users can use NAT or complex firewall
-software that blocks incoming connections. It may be even worse: in corporate
-environments users are often limited to HTTP proxy as the only source of the
-Internet connection.
+В соответствии с концепцией сетевого взаимодействия (см. главу
+\ref{sec:collaborative_mindmapping}), мы имеем клиент-серверную архитектуру.
+Взаимодействие пользователей будет более удобным, если сервер можно будет
+создавать на любом устройстве и в любой момент времени. Взаимодействие должно
+выглядеть следующим образом: пользователь создаёт сервер, другие участники
+подсоединяются к нему и начинают редактирование. Каждое изменение, сделанное
+участником, отправляется на сервер, который рассылает это изменение всем другим
+участникам. Для надежного сообщения между клиентами и сервером, все участники
+должны иметь одинаковую и верную копию карты.
 
-Summarizing all these challenges we get the following list of requirements for
-middleware technology.
+Проект HiveMind поддерживает мобильные устройства и настольные компьютеры (см.
+главу \ref{sec:project_summary}), имеющие различный способ подключения к
+интернету. У каждого из этих способов есть свои преимущества и
+недостатки. Пользователи настольных компьютеров, как правило, имеют широкий
+канал интернет соединения, в отличие от пользователей мобильмобильных устройств.
+Мобильные устройства способны подключаться к интернету почти везде и в любое
+время. В связи с нехваткой IPv4 адресов, операторы мобильной связи назначают
+серые ip адреса мобильным устройствам, что делает данные устройства недоступными
+напрямую из сети Интернет. Соединение по беспроводным сетям зачастую нестабильно
+и иногда вызывает значительные задержки при передачи данных. Пользователи
+настольных компьютеров могут использовать NAT или фаервол блокирующий
+входящие соединения. В корпоративной среде, пользователи зачастую ограничены
+HTTP прокси, как единственным способом доступа в сеть Интернет.
+
+Подводя итог всем вышеперечисленным особенностям, был сформирован список
+требований для выбираемой технологии промежуточного слоя.
 \begin{itemize}
-\item Communication is based on the client-server model.
-\item Server supports for subscription.
-\item Users may have a slow unreliable connection to the Internet through the
-  NAT gateway.
-\item There must be no additional effort to set up the server.
-\item Middleware must be supported by a Python library.
+\item Взаимодействие основанное на клиент-серверной модели.
+\item Сервер должен иметь поддержку подписки.
+\item Пользователь может иметь медленное, ненадежное соединение до
+сети Интернет, расположенное за NAT.
+\item Не должно быть сложностей в создании сервера.
+\item Выбранная технология должна поддерживаться библиотекой на языке
+Python.
 \end{itemize}
 
-%This is not full list of requirements. It can be filled up with these
-%statements. They cover additional functionality.
-%\begin{itemize}
-%\item Technology should support transient or backup server to reinforce
-%communication between nodes.
-%\item Messages may be encrypted to ensure the privacy of shared map.
-%\item Technology should support instant messaging system.
-%\end{itemize}
 
+\subsection{Преимущества протокола XMPP}
 We compared several alternative technologies and chose the XMPP protocol as it
 allows us to avoid almost all concerns about implementation of client-server
 communication.
@@ -84,6 +87,7 @@ relates to the device being a server, which may require broader connection to
 communicate with lots of clients. This question will be addressed during the
 further development of the HiveMind network subsystem.
 
+\subsection{Выбор библиотеки для работы с XMPP протоколом}
 The next task was to find a pure Python XMPP library that supports XEP-0060
 extension. There are eight Python libraries listed at the XMPP Foundation
 Website \cite{xmpp}. Some of them are discontinued (jabber.py), some are
