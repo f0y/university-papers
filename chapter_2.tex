@@ -51,6 +51,13 @@ Python.
 \end{itemize}
 
 \subsection{Преимущества протокола XMPP}
+
+% The XMPP protocol family is build out of two things: the core technology and the
+% XMPP Extension protocols (XEP). The core is responsible for the message exchange
+% between different parts of the system. Various extension protocols are built on
+% top of the core. The process of creation and maintenance of such protocols is
+% managed by XMPP Standards Foundation \cite{xmpp}.
+
 XMPP (Extensible Messaging and Presence Protocol) "--- расширяемый протокол для
 обмена сообщениями, в режиме близком к режиму реального времени. Протокол XMPP
 может быть рассмотрен на нескольких уровнях абстракции. На нижнем уровне
@@ -112,85 +119,10 @@ IRC, FTP и множество других \cite{twisted}. Twisted не име�
 поддержки XEP-0060, но существует внешняя библиотека Wokkel \cite{wokkel},
 поддерживающая данное расширение. Данная библиотека отсутствует в репозитории
 Maemo. Для того, чтобы иметь возможность её использовать, было принято решение о
-создании и поддержки пакета для платформы Maemo. Дополнительная работа была
-сделана для того, чтобы обеспечить поддержку мобильных устройств.
+создании и поддержки пакета для платформы Maemo.
 
-
-\section{Protocol For Collaboration}
-
-% really awful beginning
- The development of any complex protocol and it implementation is a
- labour-consuming process. Our development team had no previous experience in
- such field and thus we decided to use iterative approach. At the first iteration
- protocol for the team work should be as simple as possible. Thereby allow us to
- develop network architecture and to test selected libraries.
-
- % data structure
- Publish-Subscribe extension requires to share information in the form of nodes
- and items. Node-item system can be compared with file system, where nodes
- represent directories and items represent files. Each item may have unique
- identifier. Subscriber can retrieve items from service either by name or get a
- number of last published items. Items should contain a valid XML data.
-
- HiveMind has undo/redo capabilities as any good document editor does. Now they
- are implemented on top of QUndoStack. When user makes a change to the mind map
- QUndoCommand is created and pushed into the stack. This allows the user to
- travel through the history of modifications. We decided to use undo/redo stack
- to model data structures of the protocol. All mind map data can be placed
- inside a single node. First item must contain XML-serialized mind map. All other
- items hold small changesets, witch--- users make to shared map. These
- modifications are the XML-serialized versions of QUndoCommand.
-
- % notification propagation
- First item in the node is placed by the service in the moment of creation. Other
- items are published by participants of collaboration. Every new modification
- published in the node is retransmitted via update notifications to all
- subscribers and the service holder (see fig. \ref{users_collaboration_example}). 
- Service may reject the changeset if there are some defects (e.g. user wants to 
- update mind map node when it was already deleted by another user) and send error
- notification back to the subscriber.
-
- Protocol design proposes asynchronous propagation of modifications on the client
- side of publish/subscribe interaction. User changes to the mind map in the form
- of XML-serialized command are transmitted to the service and do not store in
- the local undo stack. Only changesets that were received as update notifications
- are added to the stack.
-
- Subscribers can retrieve all items stored in the node in any time. This
- way clients may synchronize contents of their local copy of mind map if
- transmitted changeset is rejected. Service does not need any additional effort
- to have up-to-date map because all notifications are local and can not be lost
- during transmission.
-
- To achieve this asynchronous process new element was added to the core of
- HiveMind --- NetworkController. It manages pub/sub protocol handlers. All
- QUndoCommands created as a result of mind map modifications are passed to the
- controller. If there is no network collaboration at the moment command will be
- sent back to MainWindowController and added to the local undo/redo stack.
- Otherwise command will be serialized and send to the service. Update
- notifications are deserialized into QUndoCommands and added to the undo/redo
- stack.
-
- The drawbacks of current collaboration protocol design and implementation
- include following statements. Client must wait for an update notification in
- order to see changes that he or she made to the shared mind map. Participants
- cannot use undo/redo commands.
-
- not 4 current document, may be next one
- There are brilliant examples on how to build iterative update shared space -
- Version Control Systems. Their main aim is almost the same as editing shared
- mind map: provide access to common space of source files. VCS can do all the 
- work here, but they do not provide any notification to all people involved in
- collaborative work. They use robust protocols, send only difference between
- committed versions, and do it really slow. \ldots
-
-\section{Network Subsystem Architecture}
-
-The XMPP protocol family is build out of two things: the core technology and the
-XMPP Extension protocols (XEP). The core is responsible for the message exchange
-between different parts of the system. Various extension protocols are built on
-top of the core. The process of creation and maintenance of such protocols is
-managed by XMPP Standards Foundation \cite{xmpp-standarts}.
+\section{Архитектура сетевой подсистемы}
+\subsection{Структура данных}
 
 The XMPP publish-subscribe extension \cite{xep-0060} uses the classic
 ``publish-subscribe'' or ``observer'' design pattern: a person or application
@@ -198,6 +130,12 @@ publishes information, and an event notification (with or without payload) is
 broadcasted to all authorized subscribers. In general, the relationship between
 the publisher and the subscriber is mediated by a service that receives
 publication requests and broadcasts event notifications to subscribers.
+
+% Publish-Subscribe extension requires to share information in the form of nodes
+% and items. Node-item system can be compared with file system, where nodes
+% represent directories and items represent files. Each item may have unique
+% identifier. Subscriber can retrieve items from service either by name or get a
+% number of last published items. Items should contain a valid XML data.
 
 Service may support several distinct entities available for subscription. These
 entities are called ``nodes''. There are different notification lists for each
@@ -214,6 +152,15 @@ participants about the change. The data is sent in the form of the item
 payload. Having this principle scheme in mind, we began to form the teamwork
 protocol and implement it in detail.
 
+% HiveMind has undo/redo capabilities as any good document editor does. Now they
+% are implemented on top of QUndoStack. When user makes a change to the mind map
+% QUndoCommand is created and pushed into the stack. This allows the user to
+% travel through the history of modifications. We decided to use undo/redo stack
+% to model data structures of the protocol. All mind map data can be placed
+% inside a single node. First item must contain XML-serialized mind map. All other
+% items hold small changesets, witch--- users make to shared map. These
+% modifications are the XML-serialized versions of QUndoCommand.
+
 Each change to the mind map is atomic. All changes to the mind map are done with
 the use of dialogs. When the edit operation is completed, QUndoCommand is
 created and pushed into the command stack. For every change command type XML
@@ -225,7 +172,7 @@ contain XML-serialized mind map. All the other items, as discussed earlier, hold
 serialized change commands.  When a participant subscribes to the node he/she
 receives all the data stored in the node.
 
-% notification propagation
+\subsection{Распространение изменений}
 
 Each modification published in the node is recorded as a ``changeset''. The
 changeset holds information about type of change, time it was formed, and the
@@ -233,6 +180,14 @@ author of the change (see fig.~\ref{Changeset propagation}). Service may reject
 the changeset if it is irrelevant (e.g. user tries to update mind map node when
 it was already deleted by another user) and send error notification back to the
 subscriber.
+
+% First item in the node is placed by the service in the moment of creation. Other
+% items are published by participants of collaboration. Every new modification
+% published in the node is retransmitted via update notifications to all
+% subscribers and the service holder (see fig. \ref{users_collaboration_example}). 
+% Service may reject the changeset if there are some defects (e.g. user wants to 
+% update mind map node when it was already deleted by another user) and send error
+% notification back to the subscriber.
 
 Protocol design proposes asynchronous propagation of modifications on the client
 side of publish/subscribe interaction. Modifications to the mind map are
@@ -257,7 +212,7 @@ sent to the service. Update notifications are deserialized into QUndoCommands
 and added to the undo/redo stack.
 
 
-\section{Implementation of Network Subsystem}
+\section{Реализация архитектуры сетевой подсистемы}
 
 Network subsystem of HiveMind is implemented on top of Twisted \cite{twisted} and
 Wokkel \cite{wokkel}. Twisted is a framework for writing asynchronous,
@@ -306,8 +261,8 @@ and starts/stops ping to the certain entity. PingClientProtocol class is
 responsible for notifying NetworkController about participant status, which is
 shown to the service owner (see fig.~\ref{Permissions dialog}).
 
-\section{Access Control System}
-\label{Access control system}
+
+\section{Система контроля доступа}
 
 By default, all participants of teamwork have equal permissions to contribute to
 the mind map. It is quite convenient for brainstorming-like activities when the
