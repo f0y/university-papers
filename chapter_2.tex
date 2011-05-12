@@ -6,6 +6,7 @@
 \section{Выбор технологий для реализации сетевой архитектуры}
 
 \subsection{Детальная проработка требований}
+\label{sec:detailed_requirements}
 Существует множество способов установить сетевое взаимодействие между
 приложениями, начиная от низкоуровневой обработки пакетов на уровне стека
 TCP/IP, заканчивая использованием высокоуровневых объектно-ориентированных
@@ -49,43 +50,48 @@ HTTP прокси, как единственным способом доступ
 Python.
 \end{itemize}
 
-
 \subsection{Преимущества протокола XMPP}
-We compared several alternative technologies and chose the XMPP protocol as it
-allows us to avoid almost all concerns about implementation of client-server
-communication.
+XMPP (Extensible Messaging and Presence Protocol) "--- расширяемый протокол для
+обмена сообщениями, в режиме близком к режиму реального времени. Протокол XMPP
+может быть рассмотрен на нескольких уровнях абстракции. На нижнем уровне
+абстракции, существует клиентское приложение, использующее протокол XMPP,
+которое подключается к серверу и обменивается с ним сообщениями. Соединение с
+сервером может быть установлено несколькими способами, даже поверх протокола
+HTTP. На высоком уровне абстракции, клиент получает доступ ко всей XMPP сети,
+где каждый её узел имеет уникальный идентификатор, называемый JID (Jabber
+Identificator). Преимуществом является то, что пересылка сообщений между узлами
+сети не требует дополнительных усилий. Клиент создаёт сообщение, адресованное
+другому клиенту и посылает его на сервер, который отвечает за все операции,
+связанные с доставкой данного сообщения.
 
-XMPP protocol can be considered at the several levels of abstraction. At the low
-level there is a XMPP client application that connects to the XMPP server and
-exchanges messages with it. Connection can be established in many ways, even on
-top of HTTP protocol. At the higher level of abstraction the client gains access
-to the whole network, where every node has unique identifier (JID) and no
-additional effort required to exchange information between them. The client
-creates a message addressed to another client and sends it to the server, which
-handles all the routine to deliver the message.
+Большое преимущество протокола XMPP "--- расширяемость. Он может быть расширен
+с помощью расширяющих протоколов (XEP). XMPP является открытым протоколом и
+каждый желающий может создать высокоуровневый протокол поверх него. Организация
+XMPP Standards Foundation отвечает за процесс создания и поддержки данных
+протоколов. Существует расширение XEP-0060 Publish-Subscribe \cite{xep-0060}.
+Оно отвечает за то, как реализовывать сервис публикации/подписки поверх
+протокола XMPP. Любой участник XMPP сети может создать сервис
+публикации/подписки.
 
-Another great feature of XMPP is protocol extensions (XEP). 
-XMPP is an open protocol and anyone may create a custom high-level protocol on
-top of it. XMPP Standards Foundation manages the process of creation and
-maintenance of such protocols. There is XEP-0060 Publish-Subscribe extension
-\cite{xep-0060}. It defines how to implement publish/subscribe services on top
-of XMPP. Any member of the network can create pub/sub service. XMPP protocol
-with Publish-Subscribe extension fits the best into our requirements and that is
-why it is our choice for middleware technology.
+Протокол XMPP основан на XML, что на первый взгляд может потребовать широкой
+полосы Интернет соединения, но это не так. Сообщения между клиентом и сервером
+могут быть сжаты с использованием расширения XEP-0138 (Stream Compression
+extension).
 
-XMPP protocol is XML-based, and it may seem that using this protocol would
-require broadband Internet connection, but it is not so. Intercommunication
-between XMPP client and server may be compressed when XEP-0138 (Stream
-Compression extension) enabled.
+В настоящее время существует множество общедоступных XMPP серверов
+поддерживающих общение в чате. Участие в подобных чатах доступно с мобильных
+устройств и не требует широкополосного доступа в Интернет. С технической точки
+зрения, совместное редактирование диаграмм очень похоже на участие в чате из
+чего следует, что объём трафика не будет сильно отличаться. Исключением является
+устройство, являющееся сервером. Данному устройству будет необходим более
+широкий канал до сети Интернет для взаимодействия со многими клиентами.
 
-Nowadays a lot of public XMPP servers (e.g. jabber.ru) support for chatting. And
-it is well-known that participating in chats is successful even when using
-mobile phones without neccessity of broadband Internet connection. From the
-technical point of view collaborative mind mapping looks very similar to chat
-participation and expected traffic volume looks comparable. The only exception
-relates to the device being a server, which may require broader connection to
-communicate with lots of clients. This question will be addressed during the
-further development of the HiveMind network subsystem.
+Протокол XMPP c расширением публикации/подписки удовлетворяет требованиям к
+технологии промежуточного слоя (см. главу \ref{sec:detailed_requirements}). Он
+позволяет избежать почти все сложности связанные с реализацией клиент-серверной
+архитектуры и с точки зрения данных требований не имеет недостатков, поэтому он
+был выбран технологией промежуточного слоя.
+
 
 \subsection{Выбор библиотеки для работы с XMPP протоколом}
 The next task was to find a pure Python XMPP library that supports XEP-0060
