@@ -116,30 +116,34 @@ Maemo. Для того, чтобы иметь возможность её исп
 создании и поддержки пакета для платформы Maemo.
 
 \section{Архитектура сетевой подсистемы}
-\subsection{Структура данных}
+\subsection{XMPP расширение публикации/подписки}
+Расширение XEP-0060 использует шаблон проектирования ``publish-subscribe'',
+являющийся более общим относительно шаблона ``observer''. Данный шаблон состоит
+в следующем: человек или приложение публикует информацию, после чего уведомление
+о данном событии (с опубликованной иноформацией или без) пересылается всем
+подписчикам. В общем случае, взаимодействие между подписчиками и публикующими
+контролируется сервером, который получает запрос на публикацию и производит
+рассылку уведомлений всем подписчикам.
 
-The XMPP publish-subscribe extension uses the classic ``publish-subscribe'' or
-``observer'' design pattern: a person or application publishes information, and
-an event notification (with or without payload) is broadcasted to all authorized
-subscribers. In general, the relationship between the publisher and the
-subscriber is mediated by a service that receives publication requests and
-broadcasts event notifications to subscribers.
+Сервер может поддерживать подписку на различные сущности. В терминах расширения
+XEP-0060, данные сущности называются ``узлами (nodes)''. Каждый подобный узел
+имеет собственный список подписчиков. Узлы также могут хранить историю всех
+уведомлений и обеспечивать другие сервисы определённые стандартом. Данные
+получаемые сервером и пересылаемые на него называются ``элементом (item)''.
+Описанная система организации данных может быть ассоциирована с организацией
+файловой системы, где узлы представляют директории, а элементы соотносятся как
+файлы.
 
-Service may support several distinct entities available for subscription. These
-entities are called ``nodes''. There are different notification lists for each
-node hosted on the service. Publishers send data to the node and subscribers
-receive event notifications from it. Nodes can also maintain history of events
-and provide other services that supplement the pure pubsub model. Data send to
-and from the node is called ``item''. Node-item system can be compared with file
-system, where nodes represent directories and items represent files.
+В терминах XMPP расширения публикации/подписки процесс взаимодействия может быть
+представлен следующим образом. Пользователь создаёт сервер с единственным узлом
+для обмена и хранения сообщений. Другие участники подписываются на обновления от
+созданного узла. Когда кто-нибудь из публикующих делает изменения, они
+пересылаются на сервер, который уведомляет всех подписчиков о произошедшем
+событии. Данные пересылаются, используя возможности элемента содержать в себе
+полезную нагрузку. Имея данную схему в голове, была начата детальная проработка
+сетевой архитектуры, учитывая архитектуру существующего приложения.
 
-In terms of publish-subscribe extension the collaboration process can be
-described as follows. A user creates a service and a single node for message
-exchange. The other participants subscribe to the created node. When anyone
-makes a change to the mind map it is sent to the service, which notifies all
-participants about the change. The data is sent in the form of the item
-payload. Having this principle scheme in mind, we began to form the teamwork
-protocol and implement it in detail.
+\subsection{Распространение изменений}
 
 HiveMind has undo/redo capabilities as any good document editor does. Now they
 are implemented on top of QUndoStack. Each change to the mind map is atomic.
@@ -152,8 +156,6 @@ this goal, the first item on the node must contain XML-serialized mind map. All
 the other items, as discussed earlier, hold serialized change commands.  When a
 participant subscribes to the node he/she receives all the data stored in the
 node.
-
-\subsection{Распространение изменений}
 
 Each modification published in the node is recorded as a ``changeset''. The
 changeset holds information about type of change, time it was formed, and the
