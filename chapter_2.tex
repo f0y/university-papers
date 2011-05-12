@@ -145,18 +145,6 @@ XEP-0060, данные сущности называются ``узлами (nod
 
 \subsection{Распространение изменений}
 
-HiveMind has undo/redo capabilities as any good document editor does. Now they
-are implemented on top of QUndoStack. Each change to the mind map is atomic.
-When user makes a change to the mind map QUndoCommand is created and pushed into
-the stack. For every change command type XML serialization and deserialization
-functions are made.  The use of edit commands causes the problem of sharing
-initial contents of the mind map. In order to execute identical commands, all
-participants must have exact copies of the initial mind map. In order to achieve
-this goal, the first item on the node must contain XML-serialized mind map. All
-the other items, as discussed earlier, hold serialized change commands.  When a
-participant subscribes to the node he/she receives all the data stored in the
-node.
-
 Each modification published in the node is recorded as a ``changeset''. The
 changeset holds information about type of change, time it was formed, and the
 author of the change (see fig.~\ref{Changeset propagation}). Service may reject
@@ -172,20 +160,31 @@ notifications are added to the stack. So, the subscriber must wait for the
 correct notification from the service in order to see changes that he or she has
 made to the mind map.
 
+To implement this asynchronous process, we introduced a new element to HiveMind
+core --- NetworkController. It manages publish-subscribe protocol handlers.
+HiveMind has undo/redo capabilities as any good document editor does. Now they
+are implemented on top of QUndoStack. Each change to the mind map is atomic.
+When user makes a change to the mind map QUndoCommand is created. For every
+change command type XML serialization and deserialization functions are made.
+All QUndoCommands are passed to the controller. If there is no network
+collaboration at the moment, the command will be added to the local undo/redo
+stack. Otherwise, command will be serialized and sent to the service. Update
+notifications are deserialized into QUndoCommands and added to the undo/redo
+stack.
+
+The use of edit commands causes the problem of sharing
+initial contents of the mind map. In order to execute identical commands, all
+participants must have exact copies of the initial mind map. In order to achieve
+this goal, the first item on the node must contain XML-serialized mind map. All
+the other items, as discussed earlier, hold serialized change commands.  When a
+participant subscribes to the node he/she receives all the data stored in the
+node.
+
 The subscribers can retrieve all items stored in the node anytime. This
 capability is used to synchronize contents of their local copy of the mind map
 if transmitted changeset is rejected. Service does not need any additional
 effort to have up-to-date map because all notifications are local and cannot be
 lost during transmission.
-
-To implement this asynchronous process, we introduced a new element to HiveMind
-core --- NetworkController. It manages publish-subscribe protocol handlers. All
-QUndoCommands, created as a result of mind map modifications, are passed to the
-controller. If there is no network collaboration at the moment, the command will
-be added to the local undo/redo stack. Otherwise, command will be serialized and
-sent to the service. Update notifications are deserialized into QUndoCommands
-and added to the undo/redo stack.
-
 
 \section{Реализация архитектуры сетевой подсистемы}
 
