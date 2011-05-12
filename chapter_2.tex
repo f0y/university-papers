@@ -52,12 +52,6 @@ Python.
 
 \subsection{Преимущества протокола XMPP}
 
-% The XMPP protocol family is build out of two things: the core technology and the
-% XMPP Extension protocols (XEP). The core is responsible for the message exchange
-% between different parts of the system. Various extension protocols are built on
-% top of the core. The process of creation and maintenance of such protocols is
-% managed by XMPP Standards Foundation \cite{xmpp}.
-
 XMPP (Extensible Messaging and Presence Protocol) "--- расширяемый протокол для
 обмена сообщениями, в режиме близком к режиму реального времени. Протокол XMPP
 может быть рассмотрен на нескольких уровнях абстракции. На нижнем уровне
@@ -124,25 +118,20 @@ Maemo. Для того, чтобы иметь возможность её исп
 \section{Архитектура сетевой подсистемы}
 \subsection{Структура данных}
 
-The XMPP publish-subscribe extension \cite{xep-0060} uses the classic
-``publish-subscribe'' or ``observer'' design pattern: a person or application
-publishes information, and an event notification (with or without payload) is
-broadcasted to all authorized subscribers. In general, the relationship between
-the publisher and the subscriber is mediated by a service that receives
-publication requests and broadcasts event notifications to subscribers.
-
-% Publish-Subscribe extension requires to share information in the form of nodes
-% and items. Node-item system can be compared with file system, where nodes
-% represent directories and items represent files. Each item may have unique
-% identifier. Subscriber can retrieve items from service either by name or get a
-% number of last published items. Items should contain a valid XML data.
+The XMPP publish-subscribe extension uses the classic ``publish-subscribe'' or
+``observer'' design pattern: a person or application publishes information, and
+an event notification (with or without payload) is broadcasted to all authorized
+subscribers. In general, the relationship between the publisher and the
+subscriber is mediated by a service that receives publication requests and
+broadcasts event notifications to subscribers.
 
 Service may support several distinct entities available for subscription. These
 entities are called ``nodes''. There are different notification lists for each
 node hosted on the service. Publishers send data to the node and subscribers
 receive event notifications from it. Nodes can also maintain history of events
 and provide other services that supplement the pure pubsub model. Data send to
-and from the node is called ``item''.
+and from the node is called ``item''. Node-item system can be compared with file
+system, where nodes represent directories and items represent files.
 
 In terms of publish-subscribe extension the collaboration process can be
 described as follows. A user creates a service and a single node for message
@@ -152,25 +141,17 @@ participants about the change. The data is sent in the form of the item
 payload. Having this principle scheme in mind, we began to form the teamwork
 protocol and implement it in detail.
 
-% HiveMind has undo/redo capabilities as any good document editor does. Now they
-% are implemented on top of QUndoStack. When user makes a change to the mind map
-% QUndoCommand is created and pushed into the stack. This allows the user to
-% travel through the history of modifications. We decided to use undo/redo stack
-% to model data structures of the protocol. All mind map data can be placed
-% inside a single node. First item must contain XML-serialized mind map. All other
-% items hold small changesets, witch--- users make to shared map. These
-% modifications are the XML-serialized versions of QUndoCommand.
-
-Each change to the mind map is atomic. All changes to the mind map are done with
-the use of dialogs. When the edit operation is completed, QUndoCommand is
-created and pushed into the command stack. For every change command type XML
-serialization and deserialization functions are made.  The use of edit commands
-causes the problem of sharing initial contents of the mind map. In order to
-execute identical commands, all participants must have exact copies of the
-initial mind map. In order to achieve this goal, the first item on the node must
-contain XML-serialized mind map. All the other items, as discussed earlier, hold
-serialized change commands.  When a participant subscribes to the node he/she
-receives all the data stored in the node.
+HiveMind has undo/redo capabilities as any good document editor does. Now they
+are implemented on top of QUndoStack. Each change to the mind map is atomic.
+When user makes a change to the mind map QUndoCommand is created and pushed into
+the stack. For every change command type XML serialization and deserialization
+functions are made.  The use of edit commands causes the problem of sharing
+initial contents of the mind map. In order to execute identical commands, all
+participants must have exact copies of the initial mind map. In order to achieve
+this goal, the first item on the node must contain XML-serialized mind map. All
+the other items, as discussed earlier, hold serialized change commands.  When a
+participant subscribes to the node he/she receives all the data stored in the
+node.
 
 \subsection{Распространение изменений}
 
@@ -180,14 +161,6 @@ author of the change (see fig.~\ref{Changeset propagation}). Service may reject
 the changeset if it is irrelevant (e.g. user tries to update mind map node when
 it was already deleted by another user) and send error notification back to the
 subscriber.
-
-% First item in the node is placed by the service in the moment of creation. Other
-% items are published by participants of collaboration. Every new modification
-% published in the node is retransmitted via update notifications to all
-% subscribers and the service holder (see fig. \ref{users_collaboration_example}). 
-% Service may reject the changeset if there are some defects (e.g. user wants to 
-% update mind map node when it was already deleted by another user) and send error
-% notification back to the subscriber.
 
 Protocol design proposes asynchronous propagation of modifications on the client
 side of publish/subscribe interaction. Modifications to the mind map are
