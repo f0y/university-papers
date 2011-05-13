@@ -262,21 +262,27 @@ BackendService, которому он делегирует реализацию 
   \label{img:network_classes}
 \end{figure}
 
-Mobile devices often have unstable internet connection, so the user have to be
-notified when XMPP session is lost. We check connection using XEP-0199 (XMPP
-Ping) \cite{ping-xep-0199}. PingClientProtocol class sends ping to the XMPP
-server and waits for reply. If there is a certain number of failed pings, the
-connection is considered as lost.
+Мобильные устройства зачастую имеют нестабильное соединение с сетью Интернет,
+поэтому приложение должно иметь механизм, позволяющий обнаружить, что соединение
+потеряно и уведомить об этом пользователя. Механизм проверки осуществляется
+посредством XMPP Ping (XEP-0199) \cite{xep-0199}. Класс Pinger
+ответственен за отсылку пинг сообщений и приём ответов. Проверка осуществляется
+следующим образом: данный класс непрерывно отсылает пинг сообщения на XMPP
+сервер, к которому подключен пользователь, если достигнуто определенное
+количество пинг соббщений, оставшихся без ответа, то соединение рассматривается
+как потерянное.
 
-The similar mechanism is used for checking participation status of a person. On
-the service each participant has his/her own instance of PingClientProtocol. Ping
-handler on the client side replies only to the service which it is connected
-to. We implemented PingManager class to manage multiple instances of
-PingClientProtocol (see fig.~\ref{img:ping_manager}).  It creates/deletes instances
-and starts/stops ping to the certain entity. PingClientProtocol class is
-responsible for notifying NetworkController about participant status, which is
-shown to the service owner (see fig.~\ref{img:permissions_dialog}).
-
+Похожий механизм используется для проверки статуса подписчиков. Каждый
+подписчик имеет свой экземпляр класса Pinger, который отвечает за отсылку пинг
+сообщений именно ему. На клиентской стороне реализован обработчик, который
+отвечает на приходящие пинг сообщения от сервера приложения. Подписчиков может
+быть очень много, поэтому был создан класс PingManager, отвечающий за управление
+экземплярами класса Pinger (см. рис. ~\ref{img:ping_manager}). Он
+создаёт и удаляет экземпляры класса Pinger, а также запускает или останавливает
+отправку пинг сообщений до адресата. Pinger уведомляет NetworkController о
+состоянии соединения с XMPP сервером, а также со всеми подписчиками.
+Пользователь может увидеть статус соединения с подписчиками в диалоге
+редактирования прав доступа(см. рис. ~\ref{img:permissions_dialog})
 
 \begin{figure}
   \centering
