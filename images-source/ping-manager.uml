@@ -16,11 +16,18 @@ skinparam footerFontName Times New Roman
 skinparam headerFontName Times New Roman
 ' skinparam classAttributeIconSize 0
 
-"NetworkController  " o-- "PingManager  "
-"PingManager  " o-- "*" "Pinger  "
+"NetworkController  " o-- "PingManager  ":Создаёт
+"PingManager  " o-- "*" "Pinger  ": Управляет
 "Pinger  " ..> "NetworkController  ": Уведомляет
 
-class "PingClientProtocol  " {
--entity: JID
+class "PingManager  " {
++pinger: dict
 }
+
+class "Pinger  " {
+-entity: JID
+-interval: int
+-maxCount: int
+}
+
 @enduml
