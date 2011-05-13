@@ -21,8 +21,15 @@ TCP/IP, заканчивая использованием высокоуровн
 выглядеть следующим образом: пользователь создаёт сервер, другие участники
 подсоединяются к нему и начинают редактирование. Каждое изменение, сделанное
 участником, отправляется на сервер, который рассылает это изменение всем другим
-участникам. Для надежного сообщения между клиентами и сервером, все участники
-должны иметь одинаковую и верную копию карты.
+участникам (см. рис. \ref{img:users_collaboration_example}). Для надежного
+сообщения между клиентами и сервером, все участники должны иметь одинаковую и верную копию карты.
+
+\begin{figure}[!h]
+  \centering
+  \includegraphics[width=\linewidth]{users_collaboration_example.pdf}
+  \caption{Взаимодействие клиентов и сервера}
+  \label{img:users_collaboration_example}
+\end{figure} 
 
 Проект HiveMind поддерживает мобильные устройства и настольные компьютеры (см.
 главу \ref{sec:project_summary}), имеющие различный способ подключения к
@@ -220,7 +227,7 @@ of Wokkel and provides implementations of many XEP-0060 features such as
 etc.
 
 Idavoll has many classes needed to implement XEP-0060 specification (see
-fig.~\ref{Network classes}). Node class represents a XEP-0060 node. There are
+fig.~\ref{img:network_classes}). Node class represents a XEP-0060 node. There are
 two node types: Leaf and Collection. A leaf node contains a published item,
 whereas a collection node contains other nodes.
 
@@ -248,10 +255,24 @@ The similar mechanism is used for checking participation status of a person. On
 the service each participant has his/her own instance of PingClientProtocol. Ping
 handler on the client side replies only to the service which it is connected
 to. We implemented PingManager class to manage multiple instances of
-PingClientProtocol (see fig.~\ref{Ping manager}).  It creates/deletes instances
+PingClientProtocol (see fig.~\ref{img:ping_manager}).  It creates/deletes instances
 and starts/stops ping to the certain entity. PingClientProtocol class is
 responsible for notifying NetworkController about participant status, which is
-shown to the service owner (see fig.~\ref{Permissions dialog}).
+shown to the service owner (see fig.~\ref{img:permissions_dialog}).
+
+\begin{figure}
+\begin{minipage}[t]{0.64\linewidth}
+  \center{\includegraphics[width=\linewidth]{idavoll-classes.pdf}}
+  \caption{Диаграмма сетевых классов}
+  \label{img:network_classes}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.35\linewidth}
+  \center{\includegraphics[scale=0.8]{ping-manager.pdf}}
+  \caption{Диаграмма классов, отвечающих за проверку состояния соединений}
+  \label{img:ping_manager}
+\end{minipage}
+\end{figure}
 
 
 \section{Система контроля доступа}
@@ -291,7 +312,14 @@ HiveMind:
   collaboration behaviour.
 \end{itemize}
 Service owner can edit role of desired person at any time with the use of
-permissions dialog (fig.~\ref{Permissions dialog}).
+permissions dialog (fig.~\ref{img:permissions_dialog}).
+
+\begin{figure}[b] 
+  \centering
+  \includegraphics[width=0.5\linewidth]{permissions_dialog.png}
+  \caption{Диалог управления правами доступа}
+  \label{img:permissions_dialog}
+\end{figure}
 
 XEP-0060 has features that makes access control even more flexible. In some
 cases it might be useful to temporarily assign publisher role to all
