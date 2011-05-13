@@ -1,4 +1,4 @@
-@startuml images/idavoll-classes.svg
+@startuml idavoll-classes.svg
 ' inkscape -z -D --file=idavoll-classes.svg --export-pdf=idavoll-classes.pdf --export-area-drawing
 
 skinparam monochrome true
@@ -20,10 +20,13 @@ skinparam headerFontName Times New Roman
 "Node " <|-- "CollectionNode "
 "LeafNode " <|-- "HivemindNode "
 
+"ChangesetStack " o-up- "*" "Changeset  "
 "HivemindNode " *-- "1" "ChangesetStack " 
 "Storage " o-- "*" "HivemindNode "
 "BackendService " o-- "1" "Storage "
-"PubSubServiceFromBackend  " *-- "1" "BackendService "
+"PubSubResourceFromBackend  " *-- "1" "BackendService "
+"PubSubService  " o-- "1" "PubSubResourceFromBackend  "
+"PubSubResourceFromBackend  " *-- "1" "PubSubService  "
 
 abstract class "Node " {
 +config: dict

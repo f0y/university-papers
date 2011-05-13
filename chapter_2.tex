@@ -96,8 +96,8 @@ XMPP был создан как протокол мгновенного обме
 широкий канал до сети Интернет для взаимодействия со многими клиентами.
 
 XMPP protocol was created as an instant messaging protocol. It is convenient to
-exchange human-readable messages in human-readable format. For the sake of
-interoperability it uses XML-based structures for message formatting. Протокол
+exchange human-reinkscape -z -D --file=changeset-propagation.svg
+--export-pdf=changeset-propagation.pdf --export-area-drawingadable messages in human-readable format. For the sake of interoperability it uses XML-based structures for message formatting. Протокол
 XMPP c расширением публикации/подписки удовлетворяет требованиям к технологии
 промежуточного слоя (см. главу \ref{sec:detailed_requirements}). Он позволяет
 избежать почти все сложности связанные с реализацией клиент-серверной
@@ -151,6 +151,7 @@ XEP-0060, данные сущности называются ``узлами (nod
 сетевой архитектуры, учитывая архитектуру существующего приложения.
 
 \subsection{Распространение изменений}
+\label{sec:changeset_propagation}
 HiveMind имеет возможности undo/redo, как и любой хороший редактор. Данная
 функциональность реализована поверх QUndoStack, который хранит всю историю
 выполненных команд. Каждое изменение на диаграмме связи атомарно. Когда
@@ -166,7 +167,7 @@ QUndoStack позволяет двигаться по всей истории и
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\linewidth]{changeset-propagation.pdf}
+  \includegraphics[width=\linewidth]{changeset-propagation.pdf}
   \caption{Диаграмма распространения изменений}
   \label{img:changeset_propagation}
 \end{figure}
@@ -205,46 +206,62 @@ NetworkController. Все команды поступают в сетевой к
 Сервер не нуждается в дополнительных способах синхронизации диаграммы, поскольку
 все изменения локальны и всегда являются актуальными и корректными.
 
-\section{Реализация архитектуры сетевой подсистемы}
+\section{Реализация сетевой подсистемы}
+Сетевая подсистема приложения была реализована поверх фрэймворка Twisted и
+библиотеки Wokkel. Wokkel является надстройкой над Twisted, добавляющей
+фрэймворку дополнительную функциональность. В частности он предоставляет
+средства для более удобной реализации XMPP расширений (XEP) и имеет поддержку
+следующих: Service Discovery (XEP-0030), Publish-Subscribe (XEP-0060).
+Реализация расширения публикации/подписки в Wokkel не содержит бизнес-логики.
+Это значит, что он отвечает за приём, генерацию и отправку сообщений в
+соответствии со спецификацией XEP-0060. Wokkel реагирует на события, относящиеся
+к публикации/подписке, делает разбор пришедших сообщений и вызывает
+соответствующие обработчики.
 
-Network subsystem of HiveMind is implemented on top of Twisted \cite{twisted} and
-Wokkel \cite{wokkel}. Twisted is a framework for writing asynchronous,
-event-driven network applications in Python. It has additional support for many
-GUI frameworks like Qt, GTK, Tk, and others.
+Расширение публикации/подписки является одним из самых больших и сложных.
+Правильная реализация необходимого функционала может занять большое количество
+времени. Поэтому было принято решение использовать библиотеку Idavoll. Данная
+библиотека реализована поверх Wokkel и реализует функциональность XEP-0060
+необходимую для приложения, такую как: ``Подписка'', ``Публикация'', ``Создание
+узлов'', ``Хранилище элементов''. Также она имеет хорошую архитектуру,
+позволяющую добавлять реализацию новой функциональности, определенной стандартом
+расширения публикации/подписки. Idavoll имеет множество классов необходимых для
+реализации спецификации XEP-0060 (см. рис. ~\ref{img:network_classes}).
 
-Wokkel library is a pack of enhancements for Twisted. Particularly, Wokkel
-provides a mechanism for easier implementation of XMPP Enhancement Protocols
-(XEP). It supports for Service Discovery (XEP-0030), Publish-Subscribe
-(XEP-0060) and other XEPs. Implementation of XEP-0060 does not contain business
-logic. It means that Wokkel responds for receiving and generating XMPP requests
-according to XEP-0060 specification. Wokkel reacts on external pub/sub events
-and invokes corresponding methods.
+Класс Node является абстрактным классом и представляют собой узел в терминах
+XEP-0060. Существуют два типа узлов: LeafNode и CollectionNode. LeafNode может
+содержать только элементы, когда как CollectionNode может содержать лишь другие
+узлы. LeafNode хранит элементы в виде простого списка, но это не является
+подходящим решением для приложения. Как было сказано в главе
+~\ref{sec:changeset_propagation}, необходимо проверять приходящие изменения на
+корректность. Для этого был создан класс Changeset, хранящий в себе информацию о
+самом изменении, его типе, времени создания и авторе данного изменения. Также
+создан специальный класс-контейнер СhangesetStack, хранящий экземпляры класса
+Changeset и отвечающий за корректность и согласованность изменений находящихся в
+нём. HivemindNode унаследован от LeafNode и в отличии от него хранит изменения в
+ChangesetStack.
 
-XEP-0060 is very large and complicated. Implementation of all features,
-necessary for HiveMind, would take lots of time. Idavoll library is built on top
-of Wokkel and provides implementations of many XEP-0060 features such as
-``Subscribing'', ``Publishing'', ``Persistent items'', ``Node creation'' and
-etc.
+BackendService содержит реализацию бизнес-логики XEP-0060. В нем содержится
+логика для работы с подписчиками, проверка прав доступа и т.д. Он связан
+отношением композиции с классом Storage, отвечающим за управление узлами
+(создание, удаление, конфигурирование). Класс HivemindNode, создаётся классом
+Storage и содержит в себе методы для добавления данных, изменения конфигурации
+узла, списка подписчиков и их ролей. PubSubService является классом библиотеки
+Wokkel отвечающий за разбор пришедших сообщений и вызов соответствующих методов.
+Если он содержит в себе экземпляр класса PubSubResourceFromBackend, то помимо
+вызова своих обработчиков, осуществляется передача уже разобранных сообщений в
+подходящие методы класса PubSubResourceFromBackend. Этот класс является
+дополнительным уровнем абстракции, что позволяет делать архитектуру более
+гибкой. PubSubResourceFromBackend обязательно содержит экземпляр класса
+BackendService, которому он делегирует реализацию бизнес-логики.
 
-Idavoll has many classes needed to implement XEP-0060 specification (see
-fig.~\ref{img:network_classes}). Node class represents a XEP-0060 node. There are
-two node types: Leaf and Collection. A leaf node contains a published item,
-whereas a collection node contains other nodes.
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{idavoll-classes.pdf}
+  \caption{Диаграмма сетевых классов}
+  \label{img:network_classes}
+\end{figure}
 
-% Для этого был создан класс
-% Changeset, хранящий в себе информацию о самом изменении, его типе,
-% времени создания и авторе данного изменения. Также создан специальный
-% класс-контейнер СhangesetStack, хранящий экземпляры класса Changeset и
-% отвечающий за согласованность изменений находящихся в нём
-
-HivemindNode class inherits LeafNode, but stores the published items in
-ChangesetStack instead of a simple list. Using of ChangesetStack allows to check
-integrity and correctness of data. Storage class responds for managing all nodes
-on the service. BackendService is an implementation of XEP-0060 business logic.
-PubSubServiceFromBackend inherits Wokkel's PubSubService class. It invokes
-methods for handling corresponding XMPP requests and delegates action performing
-to BackendService class.
-%---------------------------
 Mobile devices often have unstable internet connection, so the user have to be
 notified when XMPP session is lost. We check connection using XEP-0199 (XMPP
 Ping) \cite{ping-xep-0199}. PingClientProtocol class sends ping to the XMPP
@@ -260,18 +277,12 @@ and starts/stops ping to the certain entity. PingClientProtocol class is
 responsible for notifying NetworkController about participant status, which is
 shown to the service owner (see fig.~\ref{img:permissions_dialog}).
 
+
 \begin{figure}
-\begin{minipage}[t]{0.64\linewidth}
-  \center{\includegraphics[width=\linewidth]{idavoll-classes.pdf}}
-  \caption{Диаграмма сетевых классов}
-  \label{img:network_classes}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.35\linewidth}
-  \center{\includegraphics[scale=0.8]{ping-manager.pdf}}
+  \centering
+  \includegraphics[scale=1.2]{ping-manager.pdf}
   \caption{Диаграмма классов, отвечающих за проверку состояния соединений}
   \label{img:ping_manager}
-\end{minipage}
 \end{figure}
 
 
