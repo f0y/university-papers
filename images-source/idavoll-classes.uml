@@ -1,0 +1,38 @@
+@startuml images/idavoll-classes.svg
+' inkscape -z -D --file=idavoll-classes.svg --export-pdf=idavoll-classes.pdf --export-area-drawing
+
+skinparam monochrome true
+skinparam defaultFontName Times New Roman
+skinparam activityFontName Times New Roman
+skinparam activityArrowFontName Times New Roman
+skinparam circledCharacterFontName Times New Roman
+skinparam classArrowFontName Times New Roman
+skinparam classAttributeFontName Times New Roman
+skinparam classFontName Times New Roman
+skinparam classStereotypeFontName Times New Roman
+skinparam noteFontName Times New Roman
+skinparam titleFontName Times New Roman
+skinparam footerFontName Times New Roman
+skinparam headerFontName Times New Roman
+' skinparam classAttributeIconSize 0
+
+"Node " <|-- "LeafNode "
+"Node " <|-- "CollectionNode "
+"LeafNode " <|-- "HivemindNode "
+
+"HivemindNode " *-- "1" "ChangesetStack " 
+"Storage " o-- "*" "HivemindNode "
+"BackendService " o-- "1" "Storage "
+"PubSubServiceFromBackend  " *-- "1" "BackendService "
+
+abstract class "Node " {
++config: dict
++subscriptions: dict
++affiliations: dict
+}
+
+class "LeafNode " {
++items: list
+}
+
+@enduml
