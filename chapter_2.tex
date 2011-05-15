@@ -289,43 +289,31 @@ BackendService, которому он делегирует реализацию 
 
 
 \section{Система контроля доступа}
+По умолчанию, все участники совместной работы имеют одинаковый доступ к 
+редактированию диагаммы связей. Такое поведение является подходящим для 
+случаев, когда необходимо создать множество идей или найти решение сложной 
+проблемы. Но существуют сценарии совместной работы, описанные в пункте ~\ref
+{sec:collaborative_mindmapping}, при которых необходимо ограничить права 
+доступа некоторых пользователей. Для того, чтобы была возможность 
+взаимодействия по подобным сценариям, в HiveMind была реализована система 
+контроля доступа.
 
-By default, all participants of teamwork have equal permissions to contribute to
-the mind map. It is quite convenient for brainstorming-like activities when the
-purpose of the collaboration is to generate some materials or to find a solution
-for a long-standing problem. This kind of behavior looks unsuitable for other
-use cases. Sometimes it is useful to restrict access for particular users in
-order to prevent accidental interference of teamwork. To take such scenarios
-into account we introduced access control system to HiveMind.
-
-XEP-0060 provides a feature, named Access Model, which can be associated with
-authentication system. The user, who creates the mind map, can set trust level
-for all new participants i.e. control who can participate in collaboration.
-There are four access models implemented in HiveMind:
+Стандарт XEP-0060 заложена фукциональность называемая моделью доступа (access model), которая может быть сопоставлена с системой аутентификации. Пользователь, открывающий доступ к диаграмме, может установить уровень доверия для новых участников. Это значит, что пользователь может ограничить круг лиц, имеющих право на присоединение к совместной работе. Было реализовано четыре модели доступа:
 \begin{itemize}
-\item ``Open'' --- any person may join collaboration;
-\item ``Roster'' --- only contacts from the owner’s roster may join;
-\item ``Authorize'' --- the owner choose who may join on the fly. When a new
-  person is connected, the owner gets a participation request from the person;
-\item ``Whitelist'' --- a person may join only if he/she is in the owner’s
-  whitelist.
+\item ``Открытая (open)'' --- поведение по умолчанию,  любой может присоединиться;
+\item ``Контакт лист (roster)'' --- только лица, находящиеся в контакт листе владельца сервера;
+\item ``Интерактивная (authorize)'' --- владелец может выбирать тех, кто имеет право на участие в совместной работе. Когда очередной человек подключается к диаграмме, владелец получает запрос на присоединение;
+\item ``Белый список(whitelist)'' --- новый участник может присоединиться, лишь в том случае, если он находится в белом списке владельца сервера.
 \end{itemize}
 
-``Affiliations'' is the next feature, defined in XEP-0060, being a part of
-HiveMind access control system. This feature provides authorization capabilities
-to XEP-0060. After the person joined collaboration, he/she has a role, which
-determines a set of allowed actions. There are four roles implemented in
-HiveMind:
+Следующая часть системы контроля доступа приложения HiveMind, также является частью стандарта XEP-0060 и называется affiliations. Данная функциональность отвечает за авторизацию пользователей. Каждый участник, присоединившийся к диаграмме, имеет свою роль, определяющую набор допустимых действий. Было реализовано четыре роли: 
 \begin{itemize}
-\item ``Outcast'' --- person not allowed to join collaboration i.e. in terms of
-  IM he/she is banned;
-\item ``Member'' --- person allowed to receive items;
-\item ``Publisher'' --- person allowed to publish and receive items;
-\item ``Owner'' --- similar to the Publisher, but allowed to configure
-  collaboration behaviour.
+\item ``Изгнанник(outcast)'' --- не имеет права присоединяться и участвовать в совместной работе;
+\item ``Участник(member)'' --- имеет право только получать данные;
+\item ``Издатель(publisher)'' --- имеет право получать и публиковать данные;
+\item ``Владелец(owner)'' ---  имеет права издателя и может дополнительно конфигурировать все аспекты сетевого взаимодействия.
 \end{itemize}
-Service owner can edit role of desired person at any time with the use of
-permissions dialog (fig.~\ref{img:permissions_dialog}).
+Владелец сервера может в любой момент изменить роль человека, используя диалог управления правами доступа (см. рис. ~\ref{img:permissions_dialog}).
 
 \begin{figure}[b] 
   \centering
@@ -334,24 +322,23 @@ permissions dialog (fig.~\ref{img:permissions_dialog}).
   \label{img:permissions_dialog}
 \end{figure}
 
-XEP-0060 has features that makes access control even more flexible. In some
-cases it might be useful to temporarily assign publisher role to all
-participants. HiveMind has implementation of XEP-0060 feature named Publish
-Model. It determines two cases of who is allowed to make changes to the
-mindmap. In the first case it is a person whose affiliation is publisher, and in
-the second case any participant is allowed to post changes.
+XEP-0060 предоставляет возможность сделать систему контроля доступа еще более 
+гибкой. В некоторых случаях, может возникнуть необходимость временно 
+позволить всем участникам  редактировать диаграмму. Для этого можно изменить 
+роли всех участников на издателя, что в случае большого количества участников 
+является утомительным и долгим занятием. Выходом из данной ситуации является 
+реализация функциональности publish model, опеределенной стандартом XEP-0060. 
+Данный механизм определяет, кто имеет право вносить изменения на диаграмму 
+связей. В первом случае, это участники имеющие роль издателя, а в другом, все 
+участники имеют право изменять диаграмму.
 
-Impelementation of access control system helps us to discover new use cases of
-HiveMind. Presentation using HiveMind is one of such use cases. First of all,
-lecturer can control who may join the presentation. Secondly, there are can be
-more than one lecturer. Presentations using HiveMind distinguish from
-collaborative editing: lecturer's current node and fold/unfold events must be
-propagated through the network. This ensured that participants can track the
-presentation movement.
- 
-Authorization system can be extended to greatly improve presentation
-support. For example, lecturer may want to receive questions. Participants
-can add nodes containing a questions or suggestions to lecturer mindmap.
-Authorization system controls interaction between lecturer and participants e.g.
-participant is able to modify only his own nodes and not able to modify nodes
-created by lecturer or other participants.
+Реализация системы контроля доступа позволила значительно увеличить 
+количество сценариев совместного взаимодействия. Данная система может быть 
+улучшена, чтобы увеличить количество областей применения приложения. Одной из 
+подобных областей является проведение презентаций, а точнее взаимодействие 
+докладчика и слушателей. В пункте ~\ref{sec:collaborative_mindmapping} был 
+представлен сценарий проведения презентации. Данный сценарий может расширен 
+следующим образом: позволить слушателям добавлять свои вопросы и пожелания на 
+диаграмму докладчика. В таком случае, необходимо, чтобы слушатели не могли 
+изменять узлы созданные докладчиком или другими слушателями, за что и будет 
+отвечать система контроля доступа.  
