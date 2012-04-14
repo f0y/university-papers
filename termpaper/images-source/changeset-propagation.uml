@@ -1,0 +1,45 @@
+@startuml changeset-propagation.svg
+' inkscape -z -D --file=changeset-propagation.svg --export-pdf=changeset-propagation.pdf --export-area-drawing
+
+skinparam monochrome true
+skinparam defaultFontName Times New Roman
+skinparam activityFontName Times New Roman
+skinparam activityArrowFontName Times New Roman
+skinparam circledCharacterFontName Times New Roman
+skinparam classArrowFontName Times New Roman
+skinparam classAttributeFontName Times New Roman
+skinparam classFontName Times New Roman
+skinparam classStereotypeFontName Times New Roman
+skinparam noteFontName Times New Roman
+skinparam titleFontName Times New Roman
+skinparam footerFontName Times New Roman
+skinparam headerFontName Times New Roman
+
+(*) --> "Ожидание события"
+--> ===event===
+===event=== -left-> "Пользователь изменил диаграмму"
+--> "создать QUndoCommand"
+if "Сеть активна?" then
+    --> [да] "Создать Changeset"
+    if "" then
+    	--> [Сервер]  ===A===
+  		===A=== --> "Сохранить Changeset" as store_changeset
+  		--> "Десериализовать в команду"
+		--> "Занести в стек команд" as execute_command
+    	===A=== --> "Отправить Changeset подписчикам"
+    else
+    	--> [Клиент] "Отправить Changeset на сервер"
+   	endif
+else
+    --> [Нет] execute_command
+    --> (*)
+endif
+
+===event=== --> "Получен Сhangeset"
+if "" then
+	--> [Сервер]  ===A===
+else
+    --> [Клиент] store_changeset
+endif
+
+@enduml

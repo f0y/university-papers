@@ -1,0 +1,169 @@
+\newpage
+\appendix
+%\addappheadtotoc
+\addcontentsline{toc}{chapter}{Приложение}
+\chapter{Исходный код класса HivemindNode}
+\label{ap:HivemindNode}
+\begin{lstlisting}
+class HivemindNode(LeafNode, Observable, object):
+    def __init__(self, nodeIdentifier, owner, config):
+        Observable.__init__(self)
+        LeafNode.__init__(self, nodeIdentifier, owner, config)
+        self.stack = ChangesetStack()
+        ...
+    ...
+    def storeItems(self, items, publisher):
+        for element in items:
+            element.attributes['publisher'] = publisher.full()
+            self.stack.addUnsignedChangeset(Changeset.fromElement(element))
+            self.notifyObservers(changeset = Changeset.fromElement(element))
+        return internet.defer.succeed(None)
+    ...
+    def getItems(self, maxItems = None):
+        return internet.defer.succeed(self.stack.getItems(maxItems))
+    ...
+\end{lstlisting}
+
+\chapter{Исходный код класса PingManager}
+\label{ap:PingManager}
+\begin{lstlisting}
+class PingManager(object):
+    def __init__(self, parent, transport):
+        self.__parent = parent
+        self.__transport = transport
+        self.__pinger = dict()
+
+    def startPing(self, entity):
+        if entity not in self.__pinger:
+            return
+        self.__pinger[entity].startPing()
+
+    def stopPing(self, entity):
+        if entity not in self.__pinger:
+            return
+        self.__pinger[entity].stopPing()
+
+    def addPinger(self, entity, interval, maxCount, isServer = False):
+        if entity not in self.__pinger:
+            return
+        self.__pinger[entity] = Pinger(entity, interval, maxCount,
+                isServer)
+        self.__pinger[entity].addObserver(self.__parent)
+        self.__pinger[entity].setHandlerParent(self.__transport)
+
+    def removePinger(self, entity):
+        if entity not in self.__pinger:
+            return
+        self.stopPing(entity)
+        if self.__transport:
+            self.__pinger[entity].disownHandlerParent(self.__transport)
+        self.__pinger[entity].deleteObserver(self.__parent)
+        del self.__pinger[entity]
+
+    def removeAll(self, exclude = None):
+        for entity in self.__pinger.keys():
+            if exclude and entity not in exclude:
+                self.removePinger(entity)
+\end{lstlisting}
+
+\chapter{Исходный код класса Pinger}
+\label{ap:Pinger}
+\begin{lstlisting}
+class Pinger(XMPPHandler, Observable):
+    entityState = enum.enum('alive', 'timeout')
+    def __init__(self, entity, interval, maxCount, isServer = False):
+        Observable.__init__(self)
+        XMPPHandler.__init__(self)
+        self.__entity = entity
+        self.__interval = interval
+        self.__maxCount = maxCount
+        self.__isServer = isServer
+        self.__pingLoop = None
+        self.__count = 0
+
+    def ping(self, entity, sender = None):
+        request = jabber.xmlstream.IQ(self.xmlstream, 'get')
+        request.addElement((NS_PING, 'ping'))
+        if sender:
+            request['from'] = unicode(sender)
+        defer = request.send(entity.full())
+        return defer
+
+    def _onSuccess(self, result):
+        aliveEvent = {'state': self.entityState.alive, 
+                      'entity': self.__entity}
+        if self.__isServer:
+            self.notifyObservers(transportPing = aliveEvent)
+        else:
+            self.notifyObservers(protocolPing = aliveEvent)
+        self.__count = 0
+    ...
+    def _sendPing(self):
+        if self.__count > self.__maxCount:
+            timeoutEvent = {'state': self.entityState.timeout, 'entity': self.__entity}
+            if self.__isServer:
+                self.notifyObservers(transportPing = timeoutEvent)
+            else:
+                self.notifyObservers(protocolPing = timeoutEvent)
+        self.__count += 1
+        defer = self.ping(self.__entity)
+        if self.__isServer:
+            defer.addErrback(self._suppressError)
+        defer.addCallback(self._onSuccess)
+        defer.addErrback(self._suppressError)
+        defer.addErrback(lambda failure: self.notifyObservers(error = failure))
+
+    def stopPing(self):
+        if self.__pingLoop and self.__pingLoop.running:
+            self.__pingLoop.stop()
+            self.__pingLoop = None
+
+    def startPing(self):
+        self.__count = 0
+        self.__pingLoop = LoopingCall(self._sendPing)
+        self.__pingLoop.start(self.__interval, now = False)
+\end{lstlisting}
+
+\chapter{Исходный код класса HivemindClient}
+\label{ap:HivemindClient}
+
+\begin{lstlisting}
+class HivemindClient(PubSubClient, Observable):
+    def __init__(self, hivemindService):
+        PubSubClient.__init__(self)
+        Observable.__init__(self)
+        self.__service = hivemindService
+        self.jid = None
+
+    def connectionInitialized(self):
+        PubSubClient.connectionInitialized(self)
+        self.jid = self.parent.jid
+        defer = self.subscribe(self.__service, XMPP_NODE_NAME, self.jid)
+        defer.addCallback(self.retrieveItems)
+        defer.addCallback(lambda success: self.notifyObservers(
+                connection = hivemind.network.core.connectionState.collaboration))
+        defer.addErrback(lambda failure: self.notifyObservers(error = failure))
+
+    def retrieveItems(self, result = None):
+        defer = self.items(self.__service, XMPP_NODE_NAME)
+        defer.addCallback(self._parseInitItems)
+        defer.addErrback(lambda failure: self.notifyObservers(error = failure))
+
+    def _parseInitItems(self, items):
+        for item in items:
+            changeset = Changeset.fromElement(item)
+            self.notifyObservers(changeset = changeset)
+
+    def itemsReceived(self, event):
+        if (event.sender != self.__service or 
+                event.nodeIdentifier != XMPP_NODE_NAME):
+            return
+        self._parseInitItems(event.items)
+
+    def proposeChangeset(self, changeset):
+        changeset.publisher = self.jid
+        defer = self.publish(self.__service, XMPP_NODE_NAME,
+            [changeset.toElement()]) 
+        defer.addErrback(lambda failure: self.notifyObservers(error = failure))
+    ...
+\end{lstlisting}
