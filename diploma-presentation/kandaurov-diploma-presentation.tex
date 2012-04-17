@@ -32,7 +32,7 @@
 \usefonttheme{professionalfonts}
 
 
-\title[Расширение функционала системы управления проектами Redmine]{
+\title[Разработка расширений для системы управления проектами Redmine]{
 Разработка расширений для системы управления проектами Redmine
 }
 \author[Кандауров О.\,В.]{Студент 5-го курса О. Кандауров}
@@ -48,15 +48,17 @@
 \frametitle{Системы управления проектами}
 \begin{columns}
 \begin{column}{0.45\textwidth}
+\begin{block}{Функциональность}
 \begin{itemize}
-  \item Оценка и разработка
   \item Планирование
   \item Постановка задач
+  \item Оценка и разработка
   \item Управление бюджетом
   \item Распределение ресурсов
   \item Взаимодействие
   \item Документирование
 \end{itemize}
+\end{block}
 \end{column}
 \begin{column}{0.55\textwidth}
 \centerline{\includegraphics[width=1\textwidth]{project-management-software.png}}
@@ -66,44 +68,24 @@
 
 \begin{frame}
 \transwipe[direction=90]
-\frametitle{Идеальная система}
-\begin{tabular}{ >{\centering\arraybackslash}m{0.4\textwidth}  >{\centering\arraybackslash}m{0.6\textwidth} }
-\begin{minipage}{5cm}
-\begin{block}{}
-\fontsize{10pt}{12pt}
-\begin{itemize}
-  \item Требования изменяются
-  \item Приходят новые технологии
-  \item Ошибки
-  \item Стремление к совершенству
-\end{itemize}
-\end{block}
-\end{minipage}&
-\begin{minipage}{6cm}
-\begin{block}{}
-\fontsize{10pt}{12pt}
-\begin{itemize}
-  \item Усовершенствование функционала
-  \item Добавление нового функционала
-  \item Исправление дефектов
-  \item Кастомизация
-\end{itemize}
-\end{block}
-\end{minipage}\\
-\end{tabular}
-\hspace{1cm}
-\centerline{\includegraphics[width=6cm]{super-hammer.png}}
-\end{frame}
-
-\begin{frame}
-\transwipe[direction=90]
 \frametitle{Постановка задачи}
 \begin{block}{}
 \begin{itemize}
-  \item Выбрать систему управления проектами
-  \item Изучить возможности расширения / внесения изменений
-  \item Добавить необходимый функционал  / Исправить дефекты
-  \item Организовать хранение нарабаток
+  \item Реализовать отсутствующий функционал
+  \begin{itemize}
+    \item Ограничения доступа к репозиториям
+    \item Ограничение доступа к вики-страницам
+    \item Рассылка уведомлений о приближающихся и просроченных задачах
+    \item Изображения-ссылки в боковой панели
+    \item Установка статуса задачи на `Resolved` через сообщение коммита
+  \end{itemize}
+  \item Исправить дефекты
+  \begin{itemize}
+    \item Редактор может выехать за границы
+    \item Нельзя вернуться к описанию ревизии из окна просмотра набора изменений
+    \item Нельзя выбрать тип задачи при составлении при составлении обзора кода
+  \end{itemize}
+  \item Организовать хранение наработок
 \end{itemize}
 \end{block}
 \end{frame}
@@ -112,18 +94,23 @@
 \transwipe[direction=90]
 \frametitle{Redmine}
 \begin{columns}
-\begin{column}{0.6\textwidth}
+\begin{column}{0.4\textwidth}
+\begin{block}{Особенности}
+\small
 \begin{itemize}
   \item Работает в браузере
   \item Открытые исходные коды
   \item Богатая функциональность
-  \item Интеграция с репозиториями
-  \item Расширяемость (300+ плагинов)
+  \item Расширяемость
   \item Активно развивается
 \end{itemize}
+\end{block}
 \end{column}
-\begin{column}{0.4\textwidth}
-\centerline{\includegraphics[width=1\textwidth]{redmine-logo.pdf}}
+\begin{column}{0.6\textwidth}
+\begin{tabular}{ c }
+\includegraphics[width=1\textwidth]{redmine-issues.png}\\
+\includegraphics[width=1\textwidth]{redmine-issue.png}\\
+\end{tabular}
 \end{column}
 \end{columns}
 \end{frame}
@@ -131,80 +118,87 @@
 \begin{frame}
 \transwipe[direction=90]
 \frametitle{Способы внесения изменений}
-\begin{tabular}{ >{\centering\arraybackslash}m{3.5cm}  >{\centering\arraybackslash}m{5cm} }
-\includegraphics[width=1.5cm]{Ruby_on_Rails.pdf}&
-\begin{minipage}{3in}
-\begin{block}{Система плагинов Redmine (Rails engines)}
-\begin{itemize}
-  \item Redmine view/model hooks
-  \item Controller filters
-  \item ActiveRecord callbacks
-\end{itemize}
-\end{block}
-\end{minipage}\\
+\begin{tabular}{ >{\centering\arraybackslash}m{0.35\textwidth}  >{\centering\arraybackslash}m{0.3\textwidth}
+>{\centering\arraybackslash}m{0.3\textwidth}}
 
-\includegraphics[width=1.5cm]{Ruby_logo.pdf}&
-\begin{minipage}{3in}
-\begin{block}{Возможности языка Ruby}
-\begin{itemize}
-  \item Метапрограммирование
-  \item Открытые классы
-  \item Модули
-\end{itemize}
-\end{block}
-\end{minipage}\\
-
-\includegraphics[width=1.5cm]{patch-management.jpg}&
-\begin{minipage}{3in}
-\begin{block}{Патчи}
-\begin{itemize}
-  \item Внесение изменений напрямую
-\end{itemize}
-\end{block}
-\end{minipage}\\
+&\includegraphics[width=1cm]{Ruby_logo.pdf}&\includegraphics[width=1cm]{patch-management.jpg}\\
+\small
+& Система плагинов Redmine & Механизм патчей\\
+&&\\
+\hline
+&&\\
+\color{blue}{Стоимость поддержки} & Средняя & Высокая \\
+\hline
+&&\\
+\color{blue}{Спектр решаемых задач} & Ограниченный &  Максимальный\\
+\hline
+&&\\
+\color{blue}{Сложность разработки} & Высокая & Низкая \\
+\hline
+&&\\
+\color{blue}{Устойчивость к обновлениям системы} & Высокая & Низкая \\
+\hline
 \end{tabular}
 \end{frame}
 
 \begin{frame}
 \transwipe[direction=90]
 \frametitle{Mercurial Queues}
-\begin{columns}
-\begin{column}{0.65\textwidth}
-\begin{block}{Прогрессивный подход к управлению патчами}
-\begin{itemize}
-  \item Очередь патчей
-  \item Применение и снятие патчей
-  \item Фильтрация патчей по группам
-  \item Хранение патчей в репозитории
-\end{itemize}
-\end{block}
-\end{column}
-\begin{column}{0.35\textwidth}
-\centerline{\includegraphics[width=1\textwidth]{mq-versioned.png}}
-\end{column}
-\end{columns}
+\centerline{\includegraphics[width=1\textwidth]{mq-workflow.pdf}}
 \end{frame}
 
 \begin{frame}
 \transwipe[direction=90]
-\frametitle{Работа с Mercurial Queues}
-\centerline{\includegraphics[width=0.5\textwidth]{mq-workflow.png}}
+\frametitle{Ограниченный доступ к вики-страницам и репозиториям}
+\begin{block}{Функционал}
+Закрытые репозитории и страницы:
+\begin{itemize}
+  \item Добавлен флаг опеределяющий закрытость.
+  \item Доступ к просмотру только у авторизованных пользователей.
+  \item Доступ к управлению только у авторизованных пользователей.
+\end{itemize}
+\end{block}
+\begin{block}{Средства реализации}
+\begin{itemize}
+  \item \textbf{Система плагинов} - Добавление ролей в модель и элементов на веб-страницу
+   \item \textbf{Метод alias\_method\_chain}  - Перехват обращений к методам.
+   \item \textbf{язык Javascript} - Позиционирование элементов на веб-странице
+ \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\transwipe[direction=90]
+\frametitle{Рассылка уведомлений}
+\begin{block}{Функционал}
+\begin{itemize}
+  \item Уведомление о задачах, срок исполнения которых истекает в ближайшее время (конфигурируемое)
+  \item Уведомление о просроченных задачах (принудительное)
+  \item Формат: общий список просроченных задач, отсортированных по проектам и по "степени просроченности"
+\end{itemize}
+\end{block}
+\begin{block}{Механизм работы}
+В планировщик помещается rake-задача, которая:
+\begin{itemize}
+  \item Работает с БД redmine, производя выборку необходимых данных
+  \item Формирует текст письма на основе выбранных данных и шаблона
+  \item Производит отсылку e-mail на основе полученной информации
+\end{itemize}
+\end{block}
 \end{frame}
 
 \begin{frame}
 \transwipe[direction=90]
 \frametitle{Результаты}
-\begin{block}{}
+\begin{block}{Достигнутые результаты}
 \begin{itemize}
-  \item ?
-  \item ?
-  \item ?
-  \item ?
-  \item ?
+  \item Добавлен новый функционал  (разработано 4 плагина)
+  \item Исправлены дефекты системы (более 15 патчей)
+  \item Внедрена система управления патчами (4 успешных обновления)
+  \item Наработки выложены в открытый доступ 
 \end{itemize}
 \end{block}
 \end{frame}
-
 
 \begin{frame}
 \transwipe[direction=90]

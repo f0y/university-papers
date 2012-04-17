@@ -13,6 +13,5 @@ auto
 .project
 .texlipse
 **/tmp
-*.pdf
 *.fdb_latexmk
 *.synctex.gz

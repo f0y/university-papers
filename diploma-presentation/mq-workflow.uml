@@ -1,0 +1,38 @@
+@startuml mq-workflow.svg
+' inkscape -z -D --file=mq-workflow.svg --export-pdf=mq-workflow.pdf --export-area-drawing
+
+skinparam monochrome true
+
+(*)  -->  ===INIT===
+
+-->  "Создать патч" as qnew
+
+partition "Внесение изменений в патч"  {
+--> "Внести изменения в приложение" as edit
+--> "Зафиксировать изменения в патче" as qrefresh
+--> "Записать в репозиторий" as qcommit
+}
+
+===INIT===  --> [Изменение патча] "Снять патч" as qpop
+--> "Применить патч" as qpush
+qpop -->  edit
+qpush --> qpop
+
+
+===INIT=== -->[Обновление приложения] "Снять все патчи" as  qpopa
+--> "Обновить приложение" as pullu
+-down-> "Применить все патчи" as qpusha
+-left->[Ошибка?] "edit"
+
+@enduml                
+
+
+
+
+
+
+
+
+
+
+
