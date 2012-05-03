@@ -68,10 +68,26 @@
 
 \begin{frame}
 \transwipe[direction=90]
+\frametitle{Redmine}
+\begin{block}{}
+\small
+\begin{itemize}
+   \item Работает в браузере
+   \item Открытые исходные коды
+   \item Богатая функциональность
+   \item Расширяемость
+   \item Активно развивается
+\end{itemize}
+\end{block}
+\centerline{\includegraphics[width=1\textwidth]{redmine-issues.png}}
+\end{frame}
+
+\begin{frame}
+\transwipe[direction=90]
 \frametitle{Постановка задачи}
 \begin{block}{}
 \begin{itemize}
-  \item Реализовать отсутствующий функционал
+  \item Реализовать дополнительный функционал
   \begin{itemize}
     \item Ограничения доступа к репозиториям
     \item Ограничение доступа к вики-страницам
@@ -79,50 +95,36 @@
     \item Изображения-ссылки в боковой панели
     \item Установка статуса задачи на `Resolved` через сообщение коммита
   \end{itemize}
-  \item Исправить дефекты
+  \item Внесение улучшений
   \begin{itemize}
-    \item Редактор может выехать за границы
-    \item Нельзя вернуться к описанию ревизии из окна просмотра набора изменений
-    \item Нельзя выбрать тип задачи при составлении при составлении обзора кода
+    \item В механизм позиционирования всплывающего календаря
+    \item В систему навигации между страницами просмотра изменений
   \end{itemize}
-  \item Организовать хранение наработок
+  \item Разработать механизм, упрощающий поддержку наработок
 \end{itemize}
 \end{block}
 \end{frame}
 
-%   \item Работает в браузере
-%   \item Открытые исходные коды
-%   \item Богатая функциональность
-%   \item Расширяемость
-%   \item Активно развивается
-\begin{frame}
-\transwipe[direction=90]
-\frametitle{Redmine}
-\includegraphics[width=1\textwidth]{redmine-issues.png}
-\end{frame}
 
 \begin{frame}
 \transwipe[direction=90]
 \frametitle{Способы внесения изменений}
-\begin{tabular}{ >{\centering\arraybackslash}m{0.35\textwidth}  >{\centering\arraybackslash}m{0.3\textwidth}
+\begin{tabular}{ >{\centering\arraybackslash}m{0.3\textwidth}  >{\centering\arraybackslash}m{0.3\textwidth}
 >{\centering\arraybackslash}m{0.3\textwidth}}
 
 &\includegraphics[width=1cm]{Ruby_logo.pdf}&\includegraphics[width=1cm]{patch-management.jpg}\\
-\small
 & Система плагинов Redmine & Механизм патчей\\
 &&\\
 \hline
-&&\\
-\color{blue}{Стоимость поддержки} & Средняя & Высокая \\
+\color{blue}{Сложность разработки} & Высокая & \color{red}{Низкая} \\
 \hline
-&&\\
-\color{blue}{Спектр решаемых задач} & Ограниченный &  Максимальный\\
+\color{blue}{Спектр решаемых задач} & Ограниченный & \color{red}{Максимальный}\\
 \hline
-&&\\
-\color{blue}{Сложность разработки} & Высокая & Низкая \\
+\color{blue}{Устойчивость к обновлениям системы} & \color{red}{Высокая} & Низкая \\
 \hline
-&&\\
-\color{blue}{Устойчивость к обновлениям системы} & Высокая & Низкая \\
+\color{blue}{Стоимость внесения изменений} & Высокая & \color{red}{Средняя} \\
+\hline
+\color{blue}{Удобство распространения} & \color{red}{Высокое} & Низкое \\
 \hline
 \end{tabular}
 \end{frame}
@@ -135,43 +137,49 @@
 
 \begin{frame}
 \transwipe[direction=90]
-\frametitle{Ограниченный доступ к вики-страницам и репозиториям}
-\begin{block}{Функционал}
-Закрытые репозитории и страницы:
-\begin{itemize}
-  \item Добавлен флаг опеределяющий закрытость.
-  \item Доступ к просмотру только у авторизованных пользователей.
-  \item Доступ к управлению только у авторизованных пользователей.
-\end{itemize}
-\end{block}
-\begin{block}{Средства реализации}
-\begin{itemize}
-  \item \textbf{Система плагинов} - Добавление ролей в модель и элементов на веб-страницу
-   \item \textbf{Метод alias\_method\_chain}  - Перехват обращений к методам.
-   \item \textbf{язык Javascript} - Позиционирование элементов на веб-странице
- \end{itemize}
-\end{block}
-\end{frame}
-
-\begin{frame}
-\transwipe[direction=90]
-\frametitle{Рассылка уведомлений}
+\frametitle{Плагин для рассылки уведомлений}
+\begin{columns}
+\begin{column}{0.6\textwidth}
 \begin{block}{Функционал}
 \begin{itemize}
-  \item Уведомление о задачах, срок исполнения которых истекает в ближайшее время (конфигурируемое)
+  \item Уведомление о задачах, срок исполнения которых истекает (конфигурируемое)
   \item Уведомление о просроченных задачах (принудительное)
   \item Формат: общий список просроченных задач, отсортированных по проектам и по "степени просроченности"
 \end{itemize}
 \end{block}
-\begin{block}{Механизм работы}
-В планировщик помещается rake-задача, которая:
-\begin{itemize}
-  \item Работает с БД redmine, производя выборку необходимых данных
-  \item Формирует текст письма на основе выбранных данных и шаблона
-  \item Производит отсылку e-mail на основе полученной информации
+\end{column}
+\begin{column}{0.4\textwidth}
+\centerline{\includegraphics[width=1\textwidth]{reminder-plugin.pdf}}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}
+\transwipe[direction=90]
+\frametitle{Передача наработок}
+\begin{columns}
+\begin{column}{0.6\textwidth}
+\begin{block}{}
+\begin{itemize} 
+  \item Привлечение пользователей
+  \begin{itemize}
+  	\item Отзывы/Предложения
+  	\item Тестирование
+  \end{itemize}
+  \item Привлечение сторонних разработчиков	
+  \begin{itemize}
+  \item Патчи
+  \end{itemize}  
 \end{itemize}
 \end{block}
+\end{column}
+\begin{column}{0.4\textwidth}
+\centerline{\includegraphics[width=1\textwidth]{opensource-feedback.pdf}}
+\end{column}
+\end{columns}
 \end{frame}
+
 
 \begin{frame}
 \transwipe[direction=90]
@@ -179,9 +187,9 @@
 \begin{block}{Достигнутые результаты}
 \begin{itemize}
   \item Добавлен новый функционал  (разработано 4 плагина)
-  \item Исправлены дефекты системы (более 15 патчей)
+  \item Внесены улучшения (более 15 патчей)
   \item Внедрена система управления патчами (4 успешных обновления)
-  \item Наработки выложены в открытый доступ 
+  \item Наработки выложены в открытый доступ
 \end{itemize}
 \end{block}
 \end{frame}
