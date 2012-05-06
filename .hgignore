@@ -20,5 +20,7 @@ auto
 *.synctex.gz
 termpaper/main.pdf
 *.svg
+.settings/**
+temp*
 diploma-presentation/kandaurov-diploma-presentation.pdf
 
