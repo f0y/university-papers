@@ -4,6 +4,9 @@ syntax: glob
 diploma.pdf
 *.log
 *.aux
+*.nav
+*.out
+*.snm
 *.toc
 *.tfm
 *.600pk
@@ -15,3 +18,7 @@ auto
 **/tmp
 *.fdb_latexmk
 *.synctex.gz
+termpaper/main.pdf
+*.svg
+diploma-presentation/kandaurov-diploma-presentation.pdf
+

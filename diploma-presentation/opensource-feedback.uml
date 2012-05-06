@@ -1,0 +1,27 @@
+@startuml opensource-feedback.svg
+' inkscape -z -D --file=opensource-feedback.svg --export-pdf=opensource-feedback.pdf --export-area-drawing
+
+skinparam monochrome true
+
+(*)  -->  "Разместить исходные тексты 
+	  в открытом доступе"
+--> "Разместить информацию
+    на официальном сайте" as site
+--> "Получить отзывы/патчи" as feedback
+--> "Внести улучшения" as improve
+--> feedback
+improve --> "Обозначить выход новой версии"
+--> site
+
+@enduml                
+
+
+
+
+
+
+
+
+
+
+
