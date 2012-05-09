@@ -4,7 +4,25 @@
 \gdef\thechapter{\@Asbuk\c@chapter}
 \makeatother
 
-%\chapter{название приложения}
+\chapter{Исходные тексты расширений}
+
+\section{Патч back-link-to-rev-from-diff.patch}
+\label{appendix:back-link-to-rev-from-diff.patch}
+\lstset{language={diff}}
+\begin{lstlisting}
+diff --git a/app/views/repositories/diff.html.erb b/app/views/repositories/diff.html.erb
+--- a/app/views/repositories/diff.html.erb
++++ b/app/views/repositories/diff.html.erb
+@@ -1,5 +1,4 @@
+-<h2><%= l(:label_revision) %> <%= @diff_format_revisions %> <%=h @path %></h2>
++<h2><%= l(:label_revision) %> 
++<%= link_to_revision(@changeset, @project, :text => @diff_format_revisions) %> 
++<%=h @path %></h2>
+ <!-- Choose view type -->
+ <% form_tag({:path => to_path_param(@path)}, :method => 'get') do %>
+   <%= hidden_field_tag('rev', params[:rev]) if params[:rev] %>
+\end{lstlisting}
+
 
 %%% Local Variables: 
 %%% mode: latex

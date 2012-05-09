@@ -24,6 +24,18 @@
 \def\labelitemii{---}
 \lstset{columns=fullflexible,extendedchars=true,showstringspaces=false}
 
+% Добавление подсветки для diff листингов
+\lstdefinelanguage{diff}
+{
+keywords={+, -, \ , @@, diff},
+sensitive=false,
+morecomment=[l][""]{\ },
+morecomment=[l][\emph]{+},
+morecomment=[l][""]{-},
+morecomment=[l][\textbf]{@@},
+morecomment=[l][""]{diff}
+}
+
 \frenchspacing
 \clubpenalty=10000
 \widowpenalty=10000
