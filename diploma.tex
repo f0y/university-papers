@@ -73,6 +73,15 @@ morecomment=[l][""]{diff}
 \renewcommand{\thefigure}{\@arabic\c@figure}
 \makeatother
 
+\newcommand{\inspicture}[2]{
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{#1.pdf}
+\caption{#2}
+\label{picture:#1}
+\end{figure}
+}
+
 \begin{document} 
 \input{title}
 \tableofcontents
