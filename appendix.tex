@@ -24,6 +24,33 @@ diff --git a/app/views/repositories/diff.html.erb b/app/views/repositories/diff.
 \end{lstlisting}
 
 
+\section{Патч ensure-that-calendar-is-visible.patch}
+\label{appendix:ensure-that-calendar-is-visible.patch}
+\lstset{language={diff}}
+\begin{lstlisting}
+diff --git a/public/javascripts/calendar/calendar-setup.js b/public/javascripts/calendar/calendar-setup.js
+--- a/public/javascripts/calendar/calendar-setup.js
++++ b/public/javascripts/calendar/calendar-setup.js
+@@ -193,6 +193,18 @@
+      cal.showAtElement(params.button || params.displayArea || params.inputField);
+    else
+      cal.showAt(params.position[0], params.position[1]);
++
++        var elementOffsets = $(cal.element).cumulativeOffset();
++        new Effect.Parallel(
++        [
++            new Effect.Tween(null, document.viewport.getScrollOffsets().top, elementOffsets[1], {sync: true},
++                function(p){ scrollTo(document.viewport.getScrollOffsets().left, p.round());}),
++            new Effect.Tween(null, document.viewport.getScrollOffsets().left, elementOffsets[0], {sync: true},
++                function(p){ scrollTo(p.round(), document.viewport.getScrollOffsets().top);})
++        ],
++        {duration: 1}
++        );
++
+    return false;
+  };
+\end{lstlisting}
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-PDF-mode: t
