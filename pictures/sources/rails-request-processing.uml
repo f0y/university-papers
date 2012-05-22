@@ -1,0 +1,32 @@
+@startuml
+skinparam monochrome true
+
+(*)  --> "Пользователь" as user
+user --> [HTTP запрос] "Веб-сервер" as gateway
+
+gateway -down-> if "Динамический контент?" then
+  -down-> [Да] "Rails Dispatcher" as dispatcher 
+  note right: Маршрутизация
+else
+  -down-> [Нет] user
+endif
+
+dispatcher --> if "Контроллер найден?" then
+  --> [Да] "Контроллер" as controller
+else
+  --> [Нет] "Вернуть\n<size:10>'Страница не найдена'</size>"
+endif
+
+controller -up-> [Запрос данных] "Модель" as model
+model --> controller
+
+controller --> [Сгенерировать] "Представление" as view
+
+view --> if "Ошибка при обработке запроса" then
+  --> [Да] "Вернуть\n<size:10>'Внутренняя ошибка сервера'</size>"
+else
+  --> [Нет] gateway
+endif
+
+
+@enduml                
