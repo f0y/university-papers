@@ -195,6 +195,21 @@ unix системах. С помощью патчей мы получаем во
 У каждого из способов есть свои достоинства и недостатки, которые приведены в
 таблице \ref{comparing_extensions}.
 \begin{table}[hb!]
+
+\makeatletter
+\def\@makecaption#1#2{
+  \vskip\abovecaptionskip
+  \sbox\@tempboxa{#2 #1}
+  \begin{flushright}
+    #1
+  \end{flushright}
+  \begin{center}
+    \textbf{#2}
+  \end{center}
+  \vskip\belowcaptionskip}
+\makeatother
+
+\caption{Сравнение способов расширения Redmine}
 \small
 \centering
 \begin{tabular}{ 
@@ -215,7 +230,7 @@ unix системах. С помощью патчей мы получаем во
 Удобство распространения & Высокое & Низкое \\
 \hline
 \end{tabular}
-\caption{Сравнение способов расширения Redmine}
+
 \label{comparing_extensions}
 \end{table}
 

@@ -1,0 +1,35 @@
+@startuml
+skinparam monochrome true
+
+package "Директория  " {
+
+object "Рабочая директория" as directory {
+
+}
+
+package "Репозиторий  " {
+
+object "Коммит" as commit1 {
+Применён патч tracker-in-review-dialog
+}
+
+object "Коммит" as commit2 {
+Применён патч private_wiki
+}
+
+package "Репозиторий MQ  " {
+object "Патч" as patch2 {
+private-wiki
+}
+object "Патч" as patch1 {
+tracker-in-review-dialog
+}
+
+}
+}
+}
+patch1 -up-> patch2
+patch2 -up-> commit1
+commit1 -up-> commit2 
+commit2 -up-> directory
+@enduml

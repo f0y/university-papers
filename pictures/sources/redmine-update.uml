@@ -8,7 +8,13 @@ skinparam monochrome true
 --> apply_patch
 
 ===INIT=== --> [Плагин] "Установить плагин" as apply_plugin
---> [Не работает?] "Временно удалить плагин"
+if "Не работает?" then
+  -->"Временно удалить плагин"
+else
+  --> "Внести исправления"
+endif
+
+
 
 @enduml                
 
