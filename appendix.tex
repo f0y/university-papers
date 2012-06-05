@@ -6,14 +6,17 @@
 
 \chapter{Глоссарий}
 \label{glossary}
+Расширение "--- это файл или набор файлов, содержащих программный код и
+позволяющих расширить или изменить поведение программной системы.
+
 Репозиторий "--- это место в файловой системе, управляемое системой контроля
-версий, в которой хранятся исходные коды приложения и различные документы
+версий, в которой хранятся исходные коды приложения и различные документы,
 вместе с историей их изменения и другой служебной информацией.
 
-Вики-страница "--- это страница на сайте, содержимое которой пользователи
-могут самостоятельно изменять с помощью инструментов предоставляемых сайтом.
+Вики-страница "--- это страница на сайте, содержимое которой пользователи могут
+самостоятельно изменять с помощью инструментов предоставляемых сайтом.
 Форматирование текста на таких страницах производится использованием
-вики-разметки.
+специального языка разметки.
 
 Метапрограммирование "--- это процесс написание компьютерных программ,
 способных создавать и изменять другие программы или самих себя на этапе
@@ -22,15 +25,15 @@
 Ruby "--- динамический язык, который предоставляет широкие возможности для
 метапрограммирования.
 
-Модуль "--- Часть кода, выделенная специальным образом и
-содержащая набор методов и констант.
+Модуль "--- Часть кода, выделенная специальным образом и содержащая набор
+методов и констант.
 
 Хук (Hook)"--- это программный интерфейс, который позволяет расширить
-функциональность Redmine. При помощи Hook'a автор плагина имеет возможность
+функциональность Redmine. При помощи хукa автор плагина имеет возможность
 зарегистрировать функции обратного вызова, которые будут вызваны одна за
-другой, при достижении участка кода, в котором расположен Hook.
+другой, при достижении участка кода, в котором расположен хук.
 
-Helper "--- это вспомогательный метод, позволяющий выделить
+Вспомогательный метод (Helper) "--- это  метод, позволяющий выделить
 повторяющийся код в методы и получить преимущества от его многократного
 использования.
 
@@ -43,8 +46,7 @@ Cron "--- это планировщик задач в UNIX-подобных оп
 использующийся для периодического выполнения заданий в определённое время.
 Регулярные действия описываются инструкциями, в конфигурационном файле.
 
-Rake "--- это инструмент для автоматизации сборки программного кода,
-использующий DSL на Ruby для определения различных задач.
+Rake "--- это инструмент для автоматизации сборки программного кода.
 
 
 \chapter{Исходные тексты расширений}
@@ -53,8 +55,6 @@ Rake "--- это инструмент для автоматизации сбор
 \label{appendix:ensure-that-calendar-is-visible.patch}
 \lstset{language={diff}}
 \small{\begin{lstlisting}
---- a/public/javascripts/calendar/calendar-setup.js
-+++ b/public/javascripts/calendar/calendar-setup.js
 @@ -193,6 +193,18 @@
       cal.showAtElement(params.button || params.displayArea || params.inputField);
     else
@@ -63,9 +63,11 @@ Rake "--- это инструмент для автоматизации сбор
 +        var elementOffsets = $(cal.element).cumulativeOffset();
 +        new Effect.Parallel(
 +        [
-+            new Effect.Tween(null, document.viewport.getScrollOffsets().top, elementOffsets[1], {sync: true},
++            new Effect.Tween(null, document.viewport.getScrollOffsets().top, 
++                elementOffsets[1], {sync: true},
 +                function(p){ scrollTo(document.viewport.getScrollOffsets().left, p.round());}),
-+            new Effect.Tween(null, document.viewport.getScrollOffsets().left, elementOffsets[0], {sync: true},
++            new Effect.Tween(null, document.viewport.getScrollOffsets().left, 
++                elementOffsets[0], {sync: true},
 +                function(p){ scrollTo(p.round(), document.viewport.getScrollOffsets().top);})
 +        ],
 +        {duration: 1}
@@ -79,8 +81,6 @@ Rake "--- это инструмент для автоматизации сбор
 \label{appendix:tracker-in-review-dialog.patch}
 \lstset{language={diff}}
 \small{\begin{lstlisting}
---- a/vendor/plugins/redmine_code_review/app/controllers/code_review_controller.rb
-+++ b/vendor/plugins/redmine_code_review/app/controllers/code_review_controller.rb
 @@ -65,7 +65,6 @@
        CodeReview.transaction {
          @review = CodeReview.new

@@ -10,6 +10,8 @@
 \usepackage{remreset}
 \usepackage{graphicx}\graphicspath{{pictures/}}
 \usepackage{array}
+\usepackage{hyphenat}
+
 
 \usepackage{xcolor}
 \renewcommand{\ULthickness}{1pt}
@@ -74,7 +76,7 @@ morecomment=[l][""]{diff}
 \makeatother
 
 \newcommand{\inspicture}[3]{
-\begin{figure}[h!]
+\begin{figure}[hb!]
 \centering
 \includegraphics[width=#3\textwidth]{#1.pdf}
 \caption{#2}
