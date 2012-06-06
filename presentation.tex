@@ -89,18 +89,15 @@
 \begin{itemize}
   \item Реализовать дополнительный функционал
   \begin{itemize}
-    \item Ограничения доступа к репозиториям
+    \item Ограничение доступа к репозиториям
     \item Ограничение доступа к вики-страницам
-    \item Рассылка уведомлений о приближающихся и просроченных задачах
+    \item Рассылка уведомлений о приближающихся задачах
     \item Изображения-ссылки в боковой панели
-    \item Установка статуса задачи на `Resolved` через сообщение коммита
-  \end{itemize}
-  \item Внесение улучшений
-  \begin{itemize}
-    \item В механизм позиционирования всплывающего календаря
-    \item В систему навигации между страницами просмотра изменений
+    \item Тип задачи при составлении обзора кода
+    \item Механизм позиционирования всплывающего календаря
   \end{itemize}
   \item Разработать механизм, упрощающий поддержку наработок
+  \item Разместить расширения в открытом доступе
 \end{itemize}
 \end{block}
 \end{frame}
@@ -131,12 +128,6 @@
 
 \begin{frame}
 \transwipe[direction=90]
-\frametitle{Mercurial Queues}
-\centerline{\includegraphics[width=1\textwidth]{mq-workflow.pdf}}
-\end{frame}
-
-\begin{frame}
-\transwipe[direction=90]
 \frametitle{Плагин для рассылки уведомлений}
 \begin{columns}
 \begin{column}{0.6\textwidth}
@@ -154,10 +145,16 @@
 \end{columns}
 \end{frame}
 
+\begin{frame}
+\transwipe[direction=90]
+\frametitle{Процесс поддержки расширений}
+\centerline{\includegraphics[width=1\textwidth]{mq-workflow.pdf}}
+\end{frame}
+
 
 \begin{frame}
 \transwipe[direction=90]
-\frametitle{Передача наработок}
+\frametitle{Размещение расширений в открытом доступе}
 \begin{columns}
 \begin{column}{0.6\textwidth}
 \begin{block}{}
@@ -165,7 +162,7 @@
   \item Привлечение пользователей
   \begin{itemize}
   	\item Отзывы/Предложения
-  	\item Тестирование
+  	\item Тестирование 
   \end{itemize}
   \item Привлечение сторонних разработчиков	
   \begin{itemize}
@@ -186,10 +183,9 @@
 \frametitle{Результаты}
 \begin{block}{Достигнутые результаты}
 \begin{itemize}
-  \item Добавлен новый функционал  (разработано 4 плагина)
-  \item Внесены улучшения (более 15 патчей)
-  \item Внедрена система управления патчами (4 успешных обновления)
-  \item Наработки выложены в открытый доступ
+  \item Добавлен функционал (Разработано 4 плагина и 2 патча)
+  \item Снижены трудозатраты на поддержку расширений
+  \item К разработке привлечено 10 пользователей
 \end{itemize}
 \end{block}
 \end{frame}
